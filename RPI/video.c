@@ -9,8 +9,9 @@
 FILE *fd;
 int video_callback(BUFFER *buffer) {
     if (TIME_UNKNOWN == buffer->pts) {
+        // Frame data in the second half
     }
-    LOG("buffer length = %d, pts = %llu", buffer->length, buffer->pts);
+    LOG("buffer length = %d, pts = %llu, flags = 0x%X", buffer->length, buffer->pts, buffer->flags);
 
     if (buffer->length) {
         if (buffer->flags & MMAL_BUFFER_HEADER_FLAG_CONFIG) {
@@ -59,15 +60,24 @@ int main(int argc, char **argv) {
     CAMERA_INSTANCE camera_instance;
     int count = 0;
     int width = 0, height = 0;
+
+    LOG("Open camera...");
     int res = arducam_init_camera(&camera_instance);
-    LOG("init camera status = %d", res);
+    if (res) {
+        LOG("init camera status = %d", res);
+        return -1;
+    }
 
     width = 1920;
     height = 1080;
+    LOG("Setting the resolution...");
     res = arducam_set_resolution(camera_instance, &width, &height);
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
+    } else {
+        LOG("Current resolution is %dx%d", width, height);
+        LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
 
     fd = fopen("test.h264", "wb");
@@ -75,14 +85,23 @@ int main(int argc, char **argv) {
     default_status(&video_state);
     // start video callback
     // Set video_state to NULL, using default parameters
-    arducam_set_video_callback(camera_instance, &video_state, video_callback, NULL);
+    LOG("Start video encoding...");
+    res = arducam_set_video_callback(camera_instance, &video_state, video_callback, NULL);
+    if (res) {
+        LOG("Failed to start video encoding, probably due to resolution greater than 1920x1080 or video_state setting error.");
+        return -1;
+    }
     usleep(1000 * 1000 * 10);
 
     // stop video callback
+    LOG("Stop video encoding...");
     arducam_set_video_callback(camera_instance, NULL, NULL, NULL);
     fclose(fd);
 
+    LOG("Close camera...");
     res = arducam_close_camera(camera_instance);
-    LOG("close camera status = %d", res);
+    if (res) {
+        LOG("close camera status = %d", res);
+    }
     return 0;
 }

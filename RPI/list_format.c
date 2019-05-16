@@ -8,11 +8,14 @@
 int main(int argc, char **argv) {
     CAMERA_INSTANCE camera_instance;
     int res = arducam_init_camera(&camera_instance);
-    LOG("init camera status = %d", res);
+    if (res) {
+        LOG("init camera status = %d", res);
+        return -1;
+    }
     struct format support_fmt;
     int index = 0;
     while (!arducam_get_support_formats(camera_instance, &support_fmt, index++)) {
-        LOG("index: %d, width: %d, height: %d", index, support_fmt.width, support_fmt.height);
+        LOG("index: %d, width: %d, height: %d", index - 1, support_fmt.width, support_fmt.height);
     }
     index = 0;
     struct camera_ctrl support_cam_ctrl;
@@ -22,8 +25,10 @@ int main(int argc, char **argv) {
             LOG("Get ctrl %s fail.", support_cam_ctrl.desc);
         }
         LOG("index: %d, CID: 0x%08X, desc: %s, min: %d, max: %d, default: %d, current: %d",
-            index, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
+            index - 1, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
             support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
     }
+    res = arducam_close_camera(camera_instance);
+    LOG("close camera status = %d", res);
     return 0;
 }

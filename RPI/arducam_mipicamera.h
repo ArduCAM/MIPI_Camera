@@ -1,6 +1,6 @@
 #ifndef _ARDUCAM_MIPI_CAMERA_H__
 #define _ARDUCAM_MIPI_CAMERA_H__
-#include "stdint.h"
+#include <stdint.h>
 #define FOURCC(a, b, c, d) ((a) | (b << 8) | (c << 16) | (d << 24))
 
 #define IMAGE_ENCODING_I420 FOURCC('I', '4', '2', '0')
@@ -129,19 +129,192 @@ typedef int (*OUTPUT_CALLBACK)(BUFFER *buffer);
 
 typedef void *CAMERA_INSTANCE;
 
+/**
+ * init camera.
+ * @param camera_instance Pointer of type CAMERA_INSTANCE, use to obtain CAMERA_INSTANCE.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    CAMERA_INStANCE camera_instance;
+    arducam_init_camera(&camera_instance);
+ @endcode
+ * */
 int arducam_init_camera(CAMERA_INSTANCE *camera_instance);
+
+/**
+ * Set output resolution.
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param width Pointer of type int, Used to specify the width and return to the actual width.
+ * @param height Pointer of type int, Used to specify the height and return to the actual height.
+ * @return error code , 0 success, !0 error.
+ * */
 int arducam_set_resolution(CAMERA_INSTANCE camera_instance, int *width, int *height);
+
+/**
+ * Set video data output callback.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param encoder_state Used to specify encoding parameters. Use default parameters if NULL.
+ * @param callback Callback method, this method will be called when there is data return.
+ * @param userdata Userdata, which will be a member of the buffer parameter in the callback function.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    int video_callback(BUFFER *buffer) {
+        buffer->userdata;
+    }
+    if(arducam_set_video_callback(camera_instance, NULL, video_callback, NULL){
+        printf("set video callback failed.");
+    }
+ @endcode
+ @note Calling the arducam_set_resolution function before stopping video encoding will terminate the video encoding.
+ * */
 int arducam_set_video_callback(CAMERA_INSTANCE camera_instance, VIDEO_ENCODER_STATE *encoder_state, OUTPUT_CALLBACK callback, void *userdata);
+
+/**
+ * Get single frame data.
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param format The data format to be obtained.
+ * @param timeout This method will return NULL if no data is obtained at this time.
+ * @return BUFFER structure pointer containing image data.
+ * 
+ * example:
+ @code
+    IMAGE_FORMAT fmt = {IMAGE_ENCODING_JPEG, 50};
+    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 3000);
+    if (!buffer) {
+        LOG("capture timeout.");
+        return;
+    }
+ @endcode
+ @note Currently supported image formats are:
+    IMAGE_ENCODING_JPEG, IMAGE_ENCODING_I420.
+ @note When the buffer is used, you need to call the arducam_release_buffer function to release it.
+ * */
 BUFFER *arducam_capture(CAMERA_INSTANCE camera_instance, IMAGE_FORMAT *format, int timeout);
+
+/**
+ * Used to release the memory occupied by the buffer.
+ * 
+ * @param buffer The buffer to be released.
+ * */
 void arducam_release_buffer(BUFFER *buffer);
+
+/**
+ * Turn on image preview
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param preview_params Preview parameter,Use default parameters if NULL.
+ * @return error code , 0 success, !0 error.
+ * */
 int arducam_start_preview(CAMERA_INSTANCE camera_instance, PREVIEW_PARAMS *preview_params);
+
+/**
+ * Turn off image preview
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @return error code , 0 success, !0 error.
+ * */
 int arducam_stop_preview(CAMERA_INSTANCE camera_instance);
+
+/**
+ * Release all resources and turn off the camera.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @return error code , 0 success, !0 error.
+ * */
 int arducam_close_camera(CAMERA_INSTANCE camera_instance);
 
+/**
+ * Set camera control to default value.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param ctrl_id Control id.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    arducam_reset_control(camera_instance, V4L2_CID_EXPOSURE);
+ @endcode
+ * */
+int arducam_reset_control(CAMERA_INSTANCE *camera_instance, int ctrl_id);
+
+/**
+ * Set camera control.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param ctrl_id Control id.
+ * @param value Control value.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, 3000);
+ @endcode
+ * */
 int arducam_set_control(CAMERA_INSTANCE camera_instance, int ctrl_id, int value);
+
+/**
+ * Set camera control value.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param ctrl_id Control id.
+ * @param value Current control value.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    int exposure = 0;
+    arducam_get_control(camera_instance, V4L2_CID_EXPOSURE, &exposure);
+    printf("Current exposure is %d\n", exposure);
+ @endcode
+ * */
 int arducam_get_control(CAMERA_INSTANCE camera_instance, int ctrl_id, int *value);
 
+/**
+ * Get the resolution supported by the current camera
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param fmt Used to return resolution parameters.
+ * @param index Format list index.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    struct format support_fmt;
+    unsigned int index = 0;
+    while (!arducam_get_support_formats(camera_instance, &support_fmt, index++)) {
+        printf("index: %d, width: %d, height: %d\n", index, support_fmt.width, support_fmt.height);
+    }
+ @endcode
+ * */
 int arducam_get_support_formats(CAMERA_INSTANCE camera_instance, struct format *fmt, int index);
+
+/**
+ * Get the control parameters supported by the current camera.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param cam_ctrl Used to return control parameters.
+ * @param index Control list index.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    unsigned int index = 0;
+    struct camera_ctrl support_cam_ctrl;
+    while (!arducam_get_support_controls(camera_instance, &support_cam_ctrl, index++)) {
+        int value = 0;
+        if (arducam_get_control(camera_instance, support_cam_ctrl.id, &value)) {
+            printf("Get ctrl %s fail.\n", support_cam_ctrl.desc);
+        }
+        printf("index: %d, CID: 0x%08X, desc: %s, min: %d, max: %d, default: %d, current: %d\n",
+            index, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
+            support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
+    }
+ @endcode
+ * */
 int arducam_get_support_controls(CAMERA_INSTANCE camera_instance, struct camera_ctrl *cam_ctrl, int index);
 
 #endif

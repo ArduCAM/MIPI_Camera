@@ -29,5 +29,5 @@ clean:
 .PHONY: install
 
 install: 
-	sudo install -m 644 $(OLIB)/libarducam_mipicamera.so /usr/lib/
+	sudo install -m 644 $(LDIR)/libarducam_mipicamera.so /usr/lib/
 

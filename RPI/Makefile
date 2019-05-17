@@ -4,23 +4,23 @@ CC		:= $(CROSS_COMPILE)gcc
 CFLAGS 	?= -I. -g -O0 -std=gnu11
 LDFLAGS	?=
 LIBS	:= -larducam_mipicamera
-OLIB	:= lib
+LDIR	:= lib
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: preview capture video list_format
 
 preview: preview.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -L $(LDIR) -o $@ $^ $(LIBS)
 
 capture: capture.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -L $(LDIR) -o $@ $^ $(LIBS)
 	
 video: video.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -L $(LDIR) -o $@ $^ $(LIBS)
 
 list_format: list_format.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -L $(LDIR) -o $@ $^ $(LIBS)
 
 clean:
 	-rm -f *.o

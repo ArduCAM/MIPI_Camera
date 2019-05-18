@@ -16,6 +16,9 @@ preview: preview.c
 capture: capture.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 	
+capture_raw: capture_raw.c
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+
 video: video.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 

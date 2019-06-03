@@ -21,7 +21,7 @@ $ make clean && make
 ## Optional Settings
 Edit /boot/config.txt file.
 Find gpu_mem=xxx line
-Modify gpu_mem size with proper size, recommend to use gpu_mem=160 for 13MP or higher camera board.
+Modify gpu_mem size with proper size, recommend to use `gpu_mem=160` for 13MP or higher camera board.
 
 # Running the Examples
 ## Preview Example
@@ -36,10 +36,12 @@ $ ./capture
 ```
 In the capture.c example, it will capture diffferent resolution JPEG images.
 
+```bash
 $ ./capture_raw
 ```
 In the capture_raw.c example, it will capture diffferent resolution none interpolation raw format images, especially useful for monochrome sensors.
 
+```bash
 $ ./raw_callback
 ```
 In the raw_callback.c example, it is callback version of capture_raw example.
@@ -66,15 +68,19 @@ This example might need to be modifed according to the correct sensor register a
 # Utility
 ## How to playback the H264 file
 1. Compile hello_video.bin
-`cd /opt/vc/src/hello_pi && ./rebuild.sh`
+```bash
+$ cd /opt/vc/src/hello_pi && ./rebuild.sh
+```
 
 2. Play H264 file
-`/opt/vc/src/hello_pi/hello_video/hello_video.bin test.h264` 
+```bash
+$ /opt/vc/src/hello_pi/hello_video/hello_video.bin test.h264
+```
 
 ## How to view RAW data
 In the utils folder, there are two python script to read and display RAW image.
 
-mipi_raw10_to_jpg.py is used to display color RAW image.
+`mipi_raw10_to_jpg.py` is used to display color RAW image.
 
-mono_to_jpg.py is used to display monochrome RAW iamge.       
+`mono_to_jpg.py` is used to display monochrome RAW iamge.       
         

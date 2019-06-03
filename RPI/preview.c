@@ -60,6 +60,15 @@ int main(int argc, char **argv) {
     if (arducam_set_control(camera_instance, V4L2_CID_HFLIP, 1)) {
         LOG("Failed to set hflip, the camera may not support this control.");
     }
+    usleep(1000 * 1000 * 2);
+    LOG("Enable Auto Exposure...");
+    arducam_software_auto_exposure(camera_instance, 1);
+
+    usleep(1000 * 1000 * 2);
+    LOG("Enable Auto White Balance...");
+    if (arducam_software_auto_white_balance(camera_instance, 1)) {
+        LOG("Mono camera does not support automatic white balance.");
+    }
 #endif
     usleep(1000 * 1000 * 10);
 

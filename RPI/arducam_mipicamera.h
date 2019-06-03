@@ -105,13 +105,17 @@ typedef struct
 } VIDEO_ENCODER_STATE;
 
 typedef struct {
-    void *priv;
+    void *priv; /**< This is private data, please don't change it. */
     uint8_t *data;
-    uint32_t alloc_size;
-    uint32_t length;
-    uint32_t flags;
-    int64_t pts;
-    void *userdata;
+    uint32_t alloc_size; /**< Allocated size in bytes of payload buffer */
+    uint32_t length;     /**< Number of bytes currently used in the payload buffer (starting
+                                   from offset) */
+    uint32_t flags;      /**< Flags describing properties of a buffer header (see
+                                   \ref bufferheaderflags "Buffer header flags") */
+
+    int64_t pts;    /**< Presentation timestamp in microseconds. \ref TIME_UNKNOWN
+                                   is used when the pts is unknown. */
+    void *userdata; /**< Field reserved for use by the client */
 } BUFFER;
 
 struct format {
@@ -126,6 +130,7 @@ struct camera_ctrl {
     int default_value;
 };
 
+// note The buffer will be automatically released after the callback function ends.
 typedef int (*OUTPUT_CALLBACK)(BUFFER *buffer);
 
 typedef void *CAMERA_INSTANCE;
@@ -166,13 +171,42 @@ int arducam_set_resolution(CAMERA_INSTANCE camera_instance, int *width, int *hei
     int video_callback(BUFFER *buffer) {
         buffer->userdata;
     }
-    if(arducam_set_video_callback(camera_instance, NULL, video_callback, NULL){
+    // start callback
+    if(arducam_set_video_callback(camera_instance, NULL, video_callback, NULL)){
         printf("set video callback failed.");
     }
+    // stop callback
+    arducam_set_video_callback(camera_instance, NULL, NULL, NULL)
  @endcode
  @note Calling the arducam_set_resolution function before stopping video encoding will terminate the video encoding.
+ @note The buffer will be automatically released after the callback function ends.
  * */
 int arducam_set_video_callback(CAMERA_INSTANCE camera_instance, VIDEO_ENCODER_STATE *encoder_state, OUTPUT_CALLBACK callback, void *userdata);
+
+/**
+ * Set raw data output callback.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param callback Callback method, this method will be called when there is data return.
+ * @param userdata Userdata, which will be a member of the buffer parameter in the callback function.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    int raw_callback(BUFFER *buffer) {
+        buffer->userdata;
+    }
+    // start callback
+    if(arducam_set_raw_callback(camera_instance, raw_callback, NULL)){
+        printf("set raw data callback failed.");
+    }
+    // stop callback
+    arducam_set_raw_callback(camera_instance, NULL, NULL)
+ @endcode
+ @note If you do a time-consuming operation in the callback, it will affect other parts, such as preview, video encoding(This issue may be fixed in the future).
+ @note The buffer will be automatically released after the callback function ends.
+ * */
+int arducam_set_raw_callback(CAMERA_INSTANCE camera_instance, OUTPUT_CALLBACK callback, void *userdata);
 
 /**
  * Get single frame data.
@@ -191,7 +225,7 @@ int arducam_set_video_callback(CAMERA_INSTANCE camera_instance, VIDEO_ENCODER_ST
     }
  @endcode
  @note Currently supported image formats are:
-    IMAGE_ENCODING_JPEG, IMAGE_ENCODING_I420.
+    IMAGE_ENCODING_JPEG, IMAGE_ENCODING_I420, IMAGE_ENCODING_RAW_BAYER
  @note When the buffer is used, you need to call the arducam_release_buffer function to release it.
  * */
 BUFFER *arducam_capture(CAMERA_INSTANCE camera_instance, IMAGE_FORMAT *format, int timeout);
@@ -317,5 +351,47 @@ int arducam_get_support_formats(CAMERA_INSTANCE camera_instance, struct format *
  @endcode
  * */
 int arducam_get_support_controls(CAMERA_INSTANCE camera_instance, struct camera_ctrl *cam_ctrl, int index);
+
+/**
+ * @brief Write sensor register.
+ * 
+ * @param camera_instance camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param address Sensor register address.
+ * @param value The value you want to write
+ * @return error code , 0 success, !0 error.
+ */
+int arducam_write_sensor_reg(CAMERA_INSTANCE camera_instance, uint16_t address, uint16_t value);
+
+/**
+ * @brief Read sensor register.
+ * 
+ * @param camera_instance camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param address Sensor register address.
+ * @param value The address of the variable that stores the result.
+ * @return error code , 0 success, !0 error.
+ */
+int arducam_read_sensor_reg(CAMERA_INSTANCE camera_instance, uint16_t address, uint16_t *value);
+
+/**
+ * @brief Enable/Disable software auto exposure.
+ * 
+ * @param camera_instance camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param enable 0 disable, !0 enable.
+ * @return error code , 0 success, !0 error.
+ * 
+ * @note Calling the arducam_set_resolution function will turn off this feature.
+ */
+int arducam_software_auto_exposure(CAMERA_INSTANCE camera_instance, int enable);
+
+/**
+ * @brief Enable/Disable software auto white balance.
+ * 
+ * @param camera_instance camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param enable 0 disable, !0 enable.
+ * @return error code , 0 success, !0 error.
+ * 
+ * @note Calling the arducam_set_resolution function will turn off this feature.
+ */
+int arducam_software_auto_white_balance(CAMERA_INSTANCE camera_instance, int enable);
 
 #endif

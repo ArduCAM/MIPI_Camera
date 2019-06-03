@@ -3,15 +3,17 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
+#define SOFTWARE_AE_AWB
+#define ENABLE_PREVIEW
 
 FILE *fd;
+int frame_count = 0;
 int video_callback(BUFFER *buffer) {
     if (TIME_UNKNOWN == buffer->pts) {
         // Frame data in the second half
     }
-    LOG("buffer length = %d, pts = %llu, flags = 0x%X", buffer->length, buffer->pts, buffer->flags);
+    // LOG("buffer length = %d, pts = %llu, flags = 0x%X", buffer->length, buffer->pts, buffer->flags);
 
     if (buffer->length) {
         if (buffer->flags & MMAL_BUFFER_HEADER_FLAG_CONFIG) {
@@ -30,6 +32,9 @@ int video_callback(BUFFER *buffer) {
                 int bytes_written = fwrite(buffer->data, 1, buffer->length, fd);
                 fflush(fd);
             }
+            // Here may be just a part of the data, we need to check it.
+            if (buffer->flags & MMAL_BUFFER_HEADER_FLAG_FRAME_END)
+                frame_count++;
         }
     }
     return 0;
@@ -79,6 +84,26 @@ int main(int argc, char **argv) {
         LOG("Current resolution is %dx%d", width, height);
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
+#if defined(ENABLE_PREVIEW)
+    LOG("Start preview...");
+    PREVIEW_PARAMS preview_params = {
+        .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen
+        .opacity = 255,              // Opacity of window - 0 = transparent, 255 = opaque
+        .window = {0, 0, 1280, 720}, // Destination rectangle for the preview window.
+    };
+    res = arducam_start_preview(camera_instance, &preview_params);
+    if (res) {
+        LOG("start preview status = %d", res);
+        return -1;
+    }
+#endif
+
+#if defined(SOFTWARE_AE_AWB)
+    LOG("Enable Software Auto Exposure...");
+    arducam_software_auto_exposure(camera_instance, 1);
+    LOG("Enable Software Auto White Balance...");
+    arducam_software_auto_white_balance(camera_instance, 1);
+#endif
 
     fd = fopen("test.h264", "wb");
     VIDEO_ENCODER_STATE video_state;
@@ -91,7 +116,15 @@ int main(int argc, char **argv) {
         LOG("Failed to start video encoding, probably due to resolution greater than 1920x1080 or video_state setting error.");
         return -1;
     }
+
+    struct timespec start, end;
+    clock_gettime(CLOCK_REALTIME, &start);
     usleep(1000 * 1000 * 10);
+    clock_gettime(CLOCK_REALTIME, &end);
+
+    double timeElapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1000000000.0;
+    LOG("Total frame count = %d", frame_count);
+    LOG("TimeElapsed = %f", timeElapsed);
 
     // stop video callback
     LOG("Stop video encoding...");

@@ -5,6 +5,8 @@
 #include <unistd.h>
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 
+#define SOFTWARE_AE_AWB
+
 void save_image(CAMERA_INSTANCE *camera_instance, const char *name) {
     IMAGE_FORMAT fmt = {IMAGE_ENCODING_JPEG, 50};
     BUFFER *buffer = arducam_capture(camera_instance, &fmt, 3000);
@@ -41,7 +43,14 @@ int main(int argc, char **argv) {
         LOG("Current resolution is %dx%d", width, height);
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
-
+#if defined(SOFTWARE_AE_AWB)
+    LOG("Enable Software Auto Exposure...");
+    arducam_software_auto_exposure(camera_instance, 1);
+    LOG("Enable Software Auto White Balance...");
+    arducam_software_auto_white_balance(camera_instance, 1);
+    LOG("Waiting for automatic adjustment to complete...");
+    usleep(1000 * 1000 * 1);
+#endif
     sprintf(file_name, "%dx%d.jpg", width, height);
     LOG("Capture image %s...", file_name);
     save_image(camera_instance, file_name);
@@ -56,6 +65,15 @@ int main(int argc, char **argv) {
     } else {
         LOG("Current resolution is %dx%d", width, height);
     }
+    
+#if defined(SOFTWARE_AE_AWB)
+    LOG("Enable Software Auto Exposure...");
+    arducam_software_auto_exposure(camera_instance, 1);
+    LOG("Enable Software Auto White Balance...");
+    arducam_software_auto_white_balance(camera_instance, 1);
+    LOG("Waiting for automatic adjustment to complete...");
+    usleep(1000 * 1000 * 1);
+#endif
 
     sprintf(file_name, "%dx%d.jpg", width, height);
     LOG("Capture image %s...", file_name);

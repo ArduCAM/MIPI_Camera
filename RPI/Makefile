@@ -8,7 +8,7 @@ OLIB	:= lib
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-all: preview capture video list_format
+all: preview capture video list_format raw_callback read_write_sensor_reg
 
 preview: preview.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
@@ -25,9 +25,15 @@ video: video.c
 list_format: list_format.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
+raw_callback: raw_callback.c
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+
+read_write_sensor_reg : read_write_sensor_reg.c
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+
 clean:
 	-rm -f *.o
-	-rm -f preview capture video list_format
+	-rm -f preview capture video list_format raw_callback read_write_sensor_reg
 
 .PHONY: install
 

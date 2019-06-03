@@ -63,13 +63,6 @@ $ ./read_write_sensor_reg
 In the read_write_sensor_reg.c example, it illustrates how to directly read/write sensor registers.
 This example might need to be modifed according to the correct sensor register address.
 
-##提示:
-* 如何使用树梅派播放H264文件
-    1. 编译hello_video.bin
-        `cd /opt/vc/src/hello_pi && ./rebuild.sh`
-    2. 播放H264文件
-        `/opt/vc/src/hello_pi/hello_video/hello_video.bin test.h264`
-        
 # Utility
 ## How to playback the H264 file
 1. Compile hello_video.bin

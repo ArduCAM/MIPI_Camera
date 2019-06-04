@@ -65,6 +65,45 @@ $ ./read_write_sensor_reg
 In the read_write_sensor_reg.c example, it illustrates how to directly read/write sensor registers.
 This example might need to be modifed according to the correct sensor register address.
 
+## OpenCV Example
+```bash
+$ ./capture2opencv
+```
+In the capture2opencv.cpp example, it converts YUV data to OpenCV Mat format, and displays as is.
+
+## Gstreamer Example
+In the video2stdout.c example, it outputs H.264 video stream to stdout, and uses gstreamer to push the stream to PC.
+
+### Example 1:
+
+Raspberry pi side command:
+```bash
+$ ./video2stdout | nc -l -p 5000
+```
+PC side command: (x.x.x.x is your Raspberry Pi IP address)
+```bash
+$  gst-launch-1.0  -v tcpclientsrc  host=x.x.x.x  port=5000 ! decodebin ! autovideosink
+```
+
+### Example 2:
+
+Raspberry pi side command:  (x.x.x.x is your Raspberry Pi IP address)
+```bash
+$ ./video2stdout | gst-launch-1.0 -v fdsrc ! h264parse !  rtph264pay config-interval=1 pt=96 ! gdppay ! tcpserversink host=x.x.x.x port=5000
+```
+PC side command: (x.x.x.x is your Raspberry Pi IP address)
+```bash
+$  gst-launch-1.0 -v tcpclientsrc host=x.x.x.x port=5000 ! gdpdepay ! rtph264depay ! avdec_h264 ! autovideosink sync=false
+```
+
+## QR Code Detection Example
+```bash
+$ ./qrcode_detection <exposure_value>
+```
+In the qrcode_detection.cpp example, it illustrates how to use global shutter camera like OV7251 or OV9281 to detect QR code using OpenCV.
+To run this demo you have to install the dependence `sudo apt-get install libzbar-dev libopencv-dev`
+
+
 # Utility
 ## How to playback the H264 file
 1. Compile hello_video.bin

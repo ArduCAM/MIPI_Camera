@@ -1,5 +1,10 @@
 #ifndef _ARDUCAM_MIPI_CAMERA_H__
 #define _ARDUCAM_MIPI_CAMERA_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #define FOURCC(a, b, c, d) ((a) | (b << 8) | (c << 16) | (d << 24))
 
@@ -227,6 +232,7 @@ int arducam_set_raw_callback(CAMERA_INSTANCE camera_instance, OUTPUT_CALLBACK ca
  @note Currently supported image formats are:
     IMAGE_ENCODING_JPEG, IMAGE_ENCODING_I420, IMAGE_ENCODING_RAW_BAYER
  @note When the buffer is used, you need to call the arducam_release_buffer function to release it.
+ @note The actual width and height of the raw bayer format and the yuv420 format are aligned, width 32 bytes aligned, and height 16 byte aligned.
  * */
 BUFFER *arducam_capture(CAMERA_INSTANCE camera_instance, IMAGE_FORMAT *format, int timeout);
 
@@ -393,5 +399,9 @@ int arducam_software_auto_exposure(CAMERA_INSTANCE camera_instance, int enable);
  * @note Calling the arducam_set_resolution function will turn off this feature.
  */
 int arducam_software_auto_white_balance(CAMERA_INSTANCE camera_instance, int enable);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

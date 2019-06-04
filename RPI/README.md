@@ -113,7 +113,9 @@ $  gst-launch-1.0 -v tcpclientsrc host=x.x.x.x port=5000 ! gdpdepay ! rtph264dep
 $ ./qrcode_detection <exposure_value>
 ```
 In the qrcode_detection.cpp example, it illustrates how to use global shutter camera like OV7251 or OV9281 to detect QR code using OpenCV.
-To run this demo you have to install the dependence `sudo apt-get install libzbar-dev libopencv-dev`
+To run this demo you have to install the dependence 
+
+`sudo apt-get update && sudo apt-get install libzbar-dev libopencv-dev`
 
 
 # Utility

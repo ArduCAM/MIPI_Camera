@@ -1,6 +1,18 @@
 # Introudction
 This the MIPI camera software SDK for Raspberry pi platform, which allow you connect global shutter cameras and upto 16MP cameras on RPI board.
 
+Now the supported MIPI camera modules are below:
+
+* 0.3MP OV7251 Monochrome Global Shutter
+ 
+* 1MP OV9281 Monochrome Global Shutter
+ 
+* 2MP OV2311 Monochrome Global Shutter
+
+* 13MP IMX135 Color Rolling Shutter
+
+* 16MP IMX298 Color Rolling Shutter
+
 # Prerequisites
 ## Enable i2c_vc
 ```bash

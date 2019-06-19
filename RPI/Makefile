@@ -6,26 +6,26 @@ CFLAGS 	?= -I. -g -O0 -std=gnu11
 CXXFLAGS?= -I. -g -std=gnu++11 `pkg-config --cflags --libs opencv`
 LDFLAGS	?=
 LIBS	:= -larducam_mipicamera
-OLIB	:= lib
+LDIR	:= lib
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: preview capture video list_format capture_raw raw_callback read_write_sensor_reg video2stdout capture2opencv qrcode_detection
 
 preview: preview.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -L $(LDIR) -o $@ $^ $(LIBS)
 
 capture: capture.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -L $(LDIR) -o $@ $^ $(LIBS)
 	
 capture_raw: capture_raw.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 video: video.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -L $(LDIR) -o $@ $^ $(LIBS)
 
 list_format: list_format.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) -L $(LDIR) -o $@ $^ $(LIBS)
 
 raw_callback: raw_callback.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
@@ -48,5 +48,5 @@ clean:
 .PHONY: install
 
 install: 
-	sudo install -m 644 $(OLIB)/libarducam_mipicamera.so /usr/lib/
+	sudo install -m 644 $(LDIR)/libarducam_mipicamera.so /usr/lib/
 

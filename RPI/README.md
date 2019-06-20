@@ -1,5 +1,5 @@
 # Introudction
-This the MIPI camera software SDK for Raspberry pi platform, which allow you connect global shutter cameras and upto 16MP cameras on RPI board.
+This the MIPI camera software SDK for Raspberry pi platform, which allow you connect global shutter cameras and upto 18MP cameras on RPI board.
 
 Now the supported MIPI camera modules are below:
 
@@ -155,5 +155,8 @@ In the utils folder, there are two python script to read and display RAW image.
 
 `mipi_raw10_to_jpg.py` is used to display color RAW image.
 
-`mono_to_jpg.py` is used to display monochrome RAW iamge.       
+`mono_to_jpg.py` is used to display monochrome RAW iamge.
+
+# Video Demo
+[![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/MIPI_Camera_RPI_Demo.jpg)](https://youtu.be/XJ2VrwXMhy4 "Up to 18MP MIPI Cameras for Raspberry Pi")       
         

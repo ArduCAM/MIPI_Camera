@@ -7,10 +7,11 @@ CXXFLAGS?= -I. -g -std=gnu++11 `pkg-config --cflags --libs opencv`
 LDFLAGS	?=
 LIBS	:= -larducam_mipicamera
 OLIB	:= lib
+examples:= preview capture video list_format capture_raw raw_callback read_write_sensor_reg preview-camera0 video2stdout capture2opencv qrcode_detection 
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-all: preview capture video list_format capture_raw raw_callback read_write_sensor_reg video2stdout capture2opencv qrcode_detection
+all: $(examples)
 
 preview: preview.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
@@ -41,9 +42,13 @@ capture2opencv : capture2opencv.cpp
 
 qrcode_detection: qrcode_detection.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS) -lzbar
+
+preview-camera0 : preview-camera0.c
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+
 clean:
 	-rm -f *.o
-	-rm -f preview capture video list_format capture_raw raw_callback read_write_sensor_reg video2stdout capture2opencv qrcode_detection
+	-rm -f $(examples)
 
 .PHONY: install
 

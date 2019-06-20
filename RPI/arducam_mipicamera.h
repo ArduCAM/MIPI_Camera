@@ -135,6 +135,15 @@ struct camera_ctrl {
     int default_value;
 };
 
+struct camera_interface {
+    int i2c_bus;        // /dev/i2c-0  or /dev/i2c-1
+    int camera_num;     // mipi interface num
+    int sda_pins[2];    // enable sda_pins[camera_num], disable sda_pins[camera_num ? 0 : 1]
+    int scl_pins[2];    // enable scl_pins[camera_num], disable scl_pins[camera_num ? 0 : 1]
+    int shutdown_pins[2];
+    int led_pins[2];
+};
+
 // note The buffer will be automatically released after the callback function ends.
 typedef int (*OUTPUT_CALLBACK)(BUFFER *buffer);
 
@@ -152,6 +161,22 @@ typedef void *CAMERA_INSTANCE;
  @endcode
  * */
 int arducam_init_camera(CAMERA_INSTANCE *camera_instance);
+
+/**
+ * init camera.
+ * @param camera_instance Pointer of type CAMERA_INSTANCE, use to obtain CAMERA_INSTANCE.
+ * @param camera_num Camera interface num.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    CAMERA_INStANCE camera_instance;
+    arducam_init_camera(&camera_instance, 0);
+ @endcode
+ @note Some boards have multiple camera interfaces.
+ * */
+int arducam_init_camera2(CAMERA_INSTANCE *camera_instance, struct camera_interface cam_interface);
+
 
 /**
  * Set output resolution.

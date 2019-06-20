@@ -13,6 +13,8 @@ Now the supported MIPI camera modules are below:
 
 * 16MP IMX298 Color Rolling Shutter
 
+* 18MP AR1820 Color Rolling Shutter
+
 # Prerequisites
 ## Enable i2c_vc
 ```bash
@@ -33,7 +35,11 @@ $ make clean && make
 ## Optional Settings
 Edit /boot/config.txt file.
 Find gpu_mem=xxx line
-Modify gpu_mem size with proper size, recommend to use `gpu_mem=160` for 13MP or higher camera board.
+Modify gpu_mem size with proper size, recommend to use 
+
+`gpu_mem=160` for 13MP  camera board,
+
+`gpu_mem=180` for 16MP or higher camera board.
 
 # Running the Examples
 ## Preview Example
@@ -116,6 +122,20 @@ In the qrcode_detection.cpp example, it illustrates how to use global shutter ca
 To run this demo you have to install the dependence 
 
 `sudo apt-get update && sudo apt-get install libzbar-dev libopencv-dev`
+
+## Dual Camera Demo
+```bash
+$ ./preview-camera0
+```
+In the preview-camera0.c examle, it illustrates how to open the different camera ports on Raspberry pi compute module.
+
+The default settings is only to open the camera port 0 for preview by using the arducam_init_camera2 API method.
+
+A camera_interface struct should be constructed according to your hardware wiring.
+
+For example camera port 0 is using sda_pin 28, scl_pin 29, led_pin 30, shutdown_pin 31, and camera port 1 is using sda_pin 0, scl_pin 1, led_pin 2, shutdown_pin 3.
+
+More information about the compute module wiring please check : https://www.raspberrypi.org/documentation/hardware/computemodule/cmio-camera.md 
 
 
 # Utility

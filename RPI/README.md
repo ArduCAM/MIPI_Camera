@@ -15,6 +15,9 @@ Now the supported MIPI camera modules are below:
 
 * 18MP AR1820 Color Rolling Shutter
 
+# Video Demo
+[![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/MIPI_Camera_RPI_Demo.jpg)](https://youtu.be/XJ2VrwXMhy4 "Up to 18MP MIPI Cameras for Raspberry Pi")       
+
 # Prerequisites
 ## Enable i2c_vc
 ```bash
@@ -157,6 +160,4 @@ In the utils folder, there are two python script to read and display RAW image.
 
 `mono_to_jpg.py` is used to display monochrome RAW iamge.
 
-# Video Demo
-[![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/MIPI_Camera_RPI_Demo.jpg)](https://youtu.be/XJ2VrwXMhy4 "Up to 18MP MIPI Cameras for Raspberry Pi")       
         

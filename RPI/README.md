@@ -128,18 +128,18 @@ To run this demo you have to install the dependence
 
 ## Dual Camera Demo
 ```bash
-$ ./preview-camera0
+$ ./preview-dualcam
+or
+$ ./capture-dualcam
 ```
-In the preview-camera0.c examle, it illustrates how to open the different camera ports on Raspberry pi compute module.
-
-The default settings is only to open the camera port 0 for preview by using the arducam_init_camera2 API method.
+In the preview-dualcam.c examle, it illustrates how to open the two camera ports on Raspberry pi compute module at the same time for preview.
+And the capture-dualcam.c examle, it illustrates how to do capture from each camera port on Raspberry pi compute module by switching between them.
 
 A camera_interface struct should be constructed according to your hardware wiring.
 
 For example camera port 0 is using sda_pin 28, scl_pin 29, led_pin 30, shutdown_pin 31, and camera port 1 is using sda_pin 0, scl_pin 1, led_pin 2, shutdown_pin 3.
 
 More information about the compute module wiring please check : https://www.raspberrypi.org/documentation/hardware/computemodule/cmio-camera.md 
-
 
 # Utility
 ## How to playback the H264 file

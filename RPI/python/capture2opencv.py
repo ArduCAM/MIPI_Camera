@@ -1,6 +1,13 @@
 import arducam_mipicamera as arducam
 import v4l2 #sudo pip install v4l2
 import time
+import cv2 #sudo apt-get install python-opencv
+
+def align_down(size, align):
+    return (size & ~((align)-1))
+
+def align_up(size, align):
+    return align_down(size + align - 1, align)
 
 def set_controls(camera):
     try:
@@ -26,25 +33,18 @@ if __name__ == "__main__":
         print("Setting the resolution...")
         fmt = camera.set_resolution(1920, 1080)
         print("Current resolution is {}".format(fmt))
-        # print("Start preview...")
-        # camera.start_preview(fullscreen = False, window = (0, 0, 1280, 720))
         set_controls(camera)
-        time.sleep(1)
-        frame = camera.capture(encoding = 'jpeg')
-        frame.as_array.tofile("{}x{}.jpg".format(fmt[0],fmt[1]))
+        while cv2.waitKey(10) != 27:
+            frame = camera.capture(encoding = 'i420')
+            height = int(align_up(fmt[1], 16))
+            width = int(align_up(fmt[0], 32))
+            image = frame.as_array.reshape(int(height * 1.5), width)
+            image = cv2.cvtColor(image, cv2.COLOR_YUV2BGR_I420)
+            cv2.imshow("Arducam", image)
 
-        print("Setting the resolution...")
-        fmt = camera.set_resolution(3280, 2464)
-        set_controls(camera)
-        time.sleep(1)
-        print("Current resolution is {}".format(fmt))
-        frame = camera.capture(encoding = 'jpeg')
-        frame.as_array.tofile("{}x{}.jpg".format(fmt[0],fmt[1]))
 
         # Release memory
         del frame
-        # print("Stop preview...")
-        # camera.stop_preview()
         print("Close camera...")
         camera.close_camera()
     except Exception as e:

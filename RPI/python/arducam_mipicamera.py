@@ -216,6 +216,20 @@ arducam_close_camera = camera_lib.arducam_close_camera
 arducam_close_camera.argtypes = [c_void_p]
 arducam_close_camera.restype = c_int
 
+arducam_unpack_raw10_to_raw8 = camera_lib.arducam_unpack_raw10_to_raw8
+arducam_unpack_raw10_to_raw8.argtypes = [POINTER(c_ubyte), c_int, c_int]
+arducam_unpack_raw10_to_raw8.restype = POINTER(BUFFER)
+
+arducam_unpack_raw10_to_raw16 = camera_lib.arducam_unpack_raw10_to_raw16
+arducam_unpack_raw10_to_raw16.argtypes = [POINTER(c_ubyte), c_int, c_int]
+arducam_unpack_raw10_to_raw16.restype = POINTER(BUFFER)
+
+def align_down(size, align):
+    return (size & ~((align)-1))
+
+def align_up(size, align):
+    return align_down(size + align - 1, align)
+
 class buffer(object):
     buffer_ptr = None
     def __init__(self, buff):
@@ -450,3 +464,39 @@ class mipi_camera(object):
             arducam_close_camera(self.camera_instance),
             sys._getframe().f_code.co_name
         )
+
+pass
+
+def unpack_raw10_to_raw8(buff, width, height):
+    if not isinstance(buff, POINTER(BUFFER)):
+        raise TypeError("Expected parameter type is POINTER(BUFFER).")
+    return buffer(arducam_unpack_raw10_to_raw8(buffer[0].data, width, height))
+
+def unpack_raw10_to_raw16(buff, width, height):
+    if not isinstance(buff, POINTER(BUFFER)):
+        raise TypeError("Expected parameter type is POINTER(BUFFER).")
+    return buffer(arducam_unpack_raw10_to_raw16(buffer[0].data, width, height))
+
+def unpack_mipi_raw10(byte_buf):
+    data = np.frombuffer(byte_buf, dtype=np.uint8)
+    # 5 bytes contain 4 10-bit pixels (5x8 == 4x10)
+    b1, b2, b3, b4, b5 = np.reshape(
+        data, (data.shape[0]//5, 5)).astype(np.uint16).T
+    o1 = (b1 << 2) + ((b5) & 0x3)
+    o2 = (b2 << 2) + ((b5 >> 2) & 0x3)
+    o3 = (b3 << 2) + ((b5 >> 4) & 0x3)
+    o4 = (b4 << 2) + ((b5 >> 6) & 0x3)
+    unpacked = np.reshape(np.concatenate(
+        (o1[:, None], o2[:, None], o3[:, None], o4[:, None]), axis=1),  4*o1.shape[0])
+    return unpacked
+
+def remove_padding(data, width, height, bit_width):
+    buff = np.frombuffer(data, np.uint8)
+    real_width = width / 8 * bit_width
+    align_width = align_up(real_width, 32)
+    align_height = align_up(height, 16)
+    
+    buff = buff.reshape(align_height, align_width)
+    buff = buff[:height, :real_width]
+    buff = buff.reshape(height * real_width)
+    return buff

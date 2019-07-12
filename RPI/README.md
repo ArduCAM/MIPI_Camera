@@ -148,7 +148,10 @@ All python examples are in the Python Folder.
 
 ## Dependency
 `sudo pip install v4l2`
+
 `sudo pip install numpy`
+
+`sudo apt-get install python-opencv`
 
 # Utility
 ## How to playback the H264 file

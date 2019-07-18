@@ -5,7 +5,7 @@
 #include <unistd.h>
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 
-void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
+void save_image(CAMERA_INSTANCE camera_instance, const char *name, int width, int height) {
     IMAGE_FORMAT fmt = {IMAGE_ENCODING_RAW_BAYER, 0};
     // The actual width and height of the IMAGE_ENCODING_RAW_BAYER format and the IMAGE_ENCODING_I420 format are aligned, 
     // width 32 bytes aligned, and height 16 byte aligned.
@@ -13,6 +13,11 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
     if (!buffer) {
         LOG("capture timeout.");
         return;
+    }
+    if(0){
+        BUFFER *buffer2 = arducam_unpack_raw10_to_raw8(buffer->data, width, height);
+        arducam_release_buffer(buffer);
+        buffer = buffer2;
     }
     FILE *file = fopen(name, "wb");
     fwrite(buffer->data, buffer->length, 1, file);
@@ -46,7 +51,7 @@ int main(int argc, char **argv) {
 
     sprintf(file_name, "%dx%d.raw", width, height);
     LOG("Capture image %s...", file_name);
-    save_image(camera_instance, file_name);
+    save_image(camera_instance, file_name, width, height);
 
     width = 3280;
     height = 2464;
@@ -61,7 +66,7 @@ int main(int argc, char **argv) {
 
     sprintf(file_name, "%dx%d.raw", width, height);
     LOG("Capture image %s...", file_name);
-    save_image(camera_instance, file_name);
+    save_image(camera_instance, file_name, width, height);
 
     LOG("Close camera...");
     res = arducam_close_camera(camera_instance);

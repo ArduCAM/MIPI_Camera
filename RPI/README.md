@@ -186,7 +186,7 @@ In the utils folder, there are two python script to read and display RAW image.
 `mono_to_jpg.py` is used to display monochrome RAW iamge.
 
 # Trouble shooting        
-## Error message ¡°open camera status = -1¡±
+## Error message open camera status = -1
 Didn't enable the camera, see Prerequisites->Enable the camera.
 
 Didn't enable i2c_vc, see Prerequisites->Enable i2c_vc.
@@ -194,6 +194,7 @@ Didn't enable i2c_vc, see Prerequisites->Enable i2c_vc.
 Camera cable loose.
 
 Run the script camera_i2c from utils folder and send output message to support@arducam.com
+
 `sudo chmod +x camera_i2c rpi3-gpiovirtbuf`  
 
-`./camera_i2c
+`./camera_i2c`

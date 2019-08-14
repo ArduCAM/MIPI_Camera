@@ -19,12 +19,22 @@ Now the supported MIPI camera modules are below:
 [![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/MIPI_Camera_RPI_Demo.jpg)](https://youtu.be/XJ2VrwXMhy4 "Up to 18MP MIPI Cameras for Raspberry Pi")       
 
 # Prerequisites
+## Enable the camera
+[![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/EnableCameraPart1.png)]  
+
+[![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/EnableCameraPart2.png)]
+
 ## Enable i2c_vc
 ```bash
 $ chmod +x ./enable_i2c_vc.sh
 $ ./enable_i2c_vc.sh
 ```
 Alter running the script, reboot will be required.
+
+## Install support package
+`sudo apt-get update && sudo apt-get install libopencv-dev`
+
+`sudo apt-get install python-opencv`
 
 ## Install the SDK library
 ```bash
@@ -141,6 +151,9 @@ For example camera port 0 is using sda_pin 28, scl_pin 29, led_pin 30, shutdown_
 
 More information about the compute module wiring please check : https://www.raspberrypi.org/documentation/hardware/computemodule/cmio-camera.md 
 
+## OV9281 External Trigger Demo
+In the ov9281_external_trigger.c example, you can see how to synchronize the camera to the external trigger events.
+
 # Python Wrapper and Examples
 The arducam_mipicamera.py script is a wrapper for the libarducam_mipicamera.so dynamic library. 
 To use this script you need to pre-install libarducam_mipicamera.so.
@@ -172,4 +185,15 @@ In the utils folder, there are two python script to read and display RAW image.
 
 `mono_to_jpg.py` is used to display monochrome RAW iamge.
 
-        
+# Trouble shooting        
+## Error message ¡°open camera status = -1¡±
+Didn't enable the camera, see Prerequisites->Enable the camera.
+
+Didn't enable i2c_vc, see Prerequisites->Enable i2c_vc.
+
+Camera cable loose.
+
+Run the script camera_i2c from utils folder and send output message to support@arducam.com
+`sudo chmod +x camera_i2c rpi3-gpiovirtbuf`  
+
+`./camera_i2c

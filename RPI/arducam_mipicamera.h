@@ -98,8 +98,7 @@ typedef struct
     int intraperiod;           /// Intra-refresh period (key frame rate)
     int quantisationParameter; /// Quantisation parameter - quality. Set bitrate 0 and set this for variable bitrate
     int bInlineHeaders;        /// Insert inline headers to stream (SPS, PPS)
-    int immutableInput;        /// Flag to specify whether encoder works in place or creates a new buffer. Result is preview can display either
-                               /// the camera output or the encoder output (with compression artifacts)
+    int immutableInput;        /// Not working
     int profile;               /// H264 profile to use for encoding
     int level;                 /// H264 level to use for encoding
 
@@ -123,10 +122,21 @@ typedef struct {
     void *userdata; /**< Field reserved for use by the client */
 } BUFFER;
 
+struct fract{
+	uint32_t numerator;
+	uint32_t denominator;
+};
+
 struct format {
+    int mode;
     int width;
     int height;
+    uint32_t pixelformat;
+    struct fract frameintervals;
+    const char *description;   /* Description string */
+	uint32_t reserved[4];
 };
+
 struct camera_ctrl {
     int id;
     const char *desc;
@@ -186,6 +196,24 @@ int arducam_init_camera2(CAMERA_INSTANCE *camera_instance, struct camera_interfa
  * @return error code , 0 success, !0 error.
  * */
 int arducam_set_resolution(CAMERA_INSTANCE camera_instance, int *width, int *height);
+
+/**
+ * @brief Set sensor mode.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param mode Mode index.(You can use the list_format program to view the supported modes.)
+ * @return error code , 0 success, !0 error.
+ */
+int arducam_set_mode(CAMERA_INSTANCE camera_instance, int mode);
+
+/**
+ * @brief Get the current format.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param fmt Pointer of type struct format, used to store format information.
+ * @return ierror code , 0 success, !0 error.
+ */
+int arducam_get_format(CAMERA_INSTANCE camera_instance, struct format *fmt);
 
 /**
  * Set video data output callback.
@@ -424,6 +452,42 @@ int arducam_software_auto_exposure(CAMERA_INSTANCE camera_instance, int enable);
  * @note Calling the arducam_set_resolution function will turn off this feature.
  */
 int arducam_software_auto_white_balance(CAMERA_INSTANCE camera_instance, int enable);
+
+/**
+ * @brief Helper function， use to unpack mipi raw10.
+ * 
+ * @param buff_in Raw10 data buffer.
+ * @param width Image width
+ * @param height Image height
+ * @return BUFFER structure pointer containing image data.
+ * 
+ * @note This function will remove the part that is filled because of the alignment, 
+ * @note for example, the height is 1080, because the height needs 16 is the alignment, 
+ * @note so the actual pixel height is 1088. After passing the height of 1080 using this 
+ * @note function, the actual pixel height of the output is 1080. 
+ * 
+ * @note The performance of this function is not very good.
+ */
+BUFFER *arducam_unpack_raw10_to_raw8(uint8_t *buff_in, int width, int height);
+
+/**
+ * @brief Helper function， use to unpack mipi raw10.
+ * 
+ * @param buff_in Raw10 data buffer.
+ * @param width Image width
+ * @param height Image height
+ * @return BUFFER structure pointer containing image data.
+ * 
+ * @note This function will remove the part that is filled because of the alignment, 
+ * @note for example, the height is 1080, because the height needs 16 is the alignment, 
+ * @note so the actual pixel height is 1088. After passing the height of 1080 using this 
+ * @note function, the actual pixel height of the output is 1080. 
+ * 
+ * @note The performance of this function is not very good.
+ */
+BUFFER *arducam_unpack_raw10_to_raw16(uint8_t *buff_in, int width, int height);
+
+int arducam_set_mode(CAMERA_INSTANCE camera_instance, int mode);
 
 #ifdef __cplusplus
 }

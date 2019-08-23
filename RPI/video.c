@@ -44,8 +44,7 @@ static void default_status(VIDEO_ENCODER_STATE *state) {
     memset(state, 0, sizeof(VIDEO_ENCODER_STATE));
     state->encoding = VIDEO_ENCODING_H264;
     state->bitrate = 17000000;
-    state->immutableInput = 1; // Flag to specify whether encoder works in place or creates a new buffer. Result is preview can display either
-                               // the camera output or the encoder output (with compression artifacts)
+    state->immutableInput = 1; // Not working
     /**********************H264 only**************************************/
     state->intraperiod = -1;                  // Not set
                                               // Specify the intra refresh period (key frame rate/GoP size).

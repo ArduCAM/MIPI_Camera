@@ -63,11 +63,27 @@ MMAL_BUFFER_HEADER_FLAG_TRANSMISSION_FAILED    = (1<<10)
 MMAL_BUFFER_HEADER_FLAG_DECODEONLY             = (1<<11)
 MMAL_BUFFER_HEADER_FLAG_NAL_END                = (1<<12)   
 
+class FRACT(Structure):
+    _fields_ = [
+        ("numerator",c_uint32),
+        ("denominator",c_uint32),
+    ]
+    def getdict(struct):
+        return dict((field, getattr(struct, field)) for field, _ in struct._fields_)
+
 class FORMAT(Structure):
     _fields_ = [
-        ("width",c_int),
-        ("height",c_int),
+        ("mode", c_int),
+        ("width", c_int),
+        ("height", c_int),
+        ("pixelformat", c_uint32),
+        ("frameintervals", FRACT),
+        ("description", c_char_p),
+        ("reserved", c_uint32 * 4),
     ]
+    def getdict(struct):
+        return dict((field, getattr(struct, field) if field != "frameintervals" else struct.frameintervals.getdict()) \
+            for field, _ in struct._fields_)
 
 class IMAGE_FORMAT(Structure):
     _fields_ = [
@@ -150,6 +166,14 @@ arducam_init_camera2.restype = c_int
 arducam_set_resolution = camera_lib.arducam_set_resolution
 arducam_set_resolution.argtypes = [c_void_p, POINTER(c_int), POINTER(c_int)]
 arducam_set_resolution.restype = c_int
+
+arducam_set_mode = camera_lib.arducam_set_mode
+arducam_set_mode.argtypes = [c_void_p, c_int]
+arducam_set_mode.restype = c_int
+
+arducam_get_format = camera_lib.arducam_get_format
+arducam_get_format.argtypes = [c_void_p, POINTER(FORMAT)]
+arducam_get_format.restype = c_int
 
 arducam_start_preview = camera_lib.arducam_start_preview
 arducam_start_preview.argtypes = [c_void_p, POINTER(PREVIEW_PARAMS)]
@@ -315,6 +339,20 @@ class mipi_camera(object):
         )
         return _width.value, _height.value
 
+    def set_mode(self, mode):
+        check_status(
+            arducam_set_mode(self.camera_instance, mode),
+            sys._getframe().f_code.co_name
+        )
+
+    def get_format(self):
+        fmt = FORMAT()
+        check_status(
+            arducam_get_format(self.camera_instance, byref(fmt)),
+            sys._getframe().f_code.co_name
+        )
+        return fmt.getdict()
+
     def start_preview(self, fullscreen = True, opacity = 255, window = None):
         rect = RECTANGLE(0, 0, 640, 480)
         if window is not None:
@@ -420,7 +458,7 @@ class mipi_camera(object):
         i = 0
         while arducam_get_support_formats(self.camera_instance, byref(fmt), i) == 0:
             i += 1
-            fmts.append((fmt.width, fmt.height))
+            fmts.append(fmt.getdict())
         return fmts
 
     def get_support_controls(self):

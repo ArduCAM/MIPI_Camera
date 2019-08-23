@@ -14,8 +14,13 @@ int main(int argc, char **argv) {
     }
     struct format support_fmt;
     int index = 0;
+    char fourcc[5];
+    fourcc[4] = '\0';
     while (!arducam_get_support_formats(camera_instance, &support_fmt, index++)) {
-        LOG("index: %d, width: %d, height: %d", index - 1, support_fmt.width, support_fmt.height);
+        strncpy(fourcc, (char *)&support_fmt.pixelformat, 4);
+        LOG("mode: %d, width: %d, height: %d, pixelformat: %s, desc: %s", 
+            support_fmt.mode, support_fmt.width, support_fmt.height, fourcc, 
+            support_fmt.description);
     }
     index = 0;
     struct camera_ctrl support_cam_ctrl;

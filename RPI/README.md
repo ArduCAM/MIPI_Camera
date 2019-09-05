@@ -32,7 +32,7 @@ $ ./enable_i2c_vc.sh
 Alter running the script, reboot will be required.
 
 ## Install support package
-`sudo apt-get update && sudo apt-get install libopencv-dev`
+`sudo apt-get update && sudo apt-get install libzbar-dev libopencv-dev`
 
 `sudo apt-get install python-opencv`
 

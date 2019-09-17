@@ -19,8 +19,9 @@ struct reg regs[] = {
     {0x303F, 0x01},
     {0x302C, 0x00},
     {0x302F, 0x7F},
-    {0x3823, 0x30},
+    {0x3823, 0x00},
     {0x0100, 0x00},
+    {0X3501, 0X05},
 };
 
 static const int regs_size = sizeof(regs) / sizeof(regs[0]);

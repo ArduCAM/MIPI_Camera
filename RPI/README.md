@@ -61,6 +61,16 @@ $ ./preview
 ```
 In the preview.c example, it will demo how to do preview in different resolution and camera control parameters.
 
+```bash
+$ ./preview_resolution
+```
+It is a variant to preview demo, which allows user to enter the resolution option.
+
+```bash
+$ ./preview_setMode
+```
+It is a variant to preview demo, which allows user to enter mode parameter from the certain mode listed from ./list_format command.
+
 ## Capture Example
 ```bash
 $ ./capture

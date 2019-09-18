@@ -11,7 +11,7 @@
 int main(int argc, char **argv) {
     CAMERA_INSTANCE camera_instance;
     
-    int mode = atoi(argv[1]);
+    int width = atoi(argv[1]), height = atoi(argv[2]);
     LOG("width = %d", width);
     LOG("height = %d", height);
     LOG("Open camera...");
@@ -21,8 +21,7 @@ int main(int argc, char **argv) {
         return -1;
     }
     LOG("Setting the resolution...");
-    //res = arducam_set_resolution(camera_instance, &width, &height);
-    res = arducam_set_mode(camera_instance, );
+    res = arducam_set_resolution(camera_instance, &width, &height);
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;

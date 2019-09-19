@@ -11,6 +11,7 @@ extern "C" {
 #define IMAGE_ENCODING_I420 FOURCC('I', '4', '2', '0')
 #define IMAGE_ENCODING_JPEG FOURCC('J', 'P', 'E', 'G')
 #define IMAGE_ENCODING_RAW_BAYER FOURCC('R', 'A', 'W', ' ')
+#define IMAGE_ENCODING_BMP FOURCC('B', 'M', 'P', ' ')
 
 #define VIDEO_ENCODING_H264 FOURCC('H', '2', '6', '4')
 

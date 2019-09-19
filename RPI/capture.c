@@ -1,16 +1,23 @@
 #include "arducam_mipicamera.h"
+#include <linux/v4l2-controls.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 
+#define FOCUS_VAL  270  //range(0-65535)
 #define SOFTWARE_AE_AWB
 
 void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
     IMAGE_FORMAT fmt = {IMAGE_ENCODING_JPEG, 50};
     // The actual width and height of the IMAGE_ENCODING_RAW_BAYER format and the IMAGE_ENCODING_I420 format are aligned, 
     // width 32 bytes aligned, and height 16 byte aligned.
+    LOG("Setting the focus...");
+        if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, FOCUS_VAL)) {
+            LOG("Failed to set focus, the camera may not support this control.");
+             }
+        usleep(1000*10);
     BUFFER *buffer = arducam_capture(camera_instance, &fmt, 3000);
     if (!buffer) {
         LOG("capture timeout.");
@@ -57,8 +64,8 @@ int main(int argc, char **argv) {
     LOG("Capture image %s...", file_name);
     save_image(camera_instance, file_name);
 
-    width = 3280;
-    height = 2464;
+    width = 9344;
+    height = 3496;
     LOG("Setting the resolution...");
     res = arducam_set_resolution(camera_instance, &width, &height);
     if (res) {

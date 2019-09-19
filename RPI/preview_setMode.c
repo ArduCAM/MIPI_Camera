@@ -10,7 +10,6 @@
 
 int main(int argc, char **argv) {
     CAMERA_INSTANCE camera_instance;
-    
     int mode = atoi(argv[1]);
     LOG("Open camera...");
     int res = arducam_init_camera(&camera_instance);
@@ -26,6 +25,7 @@ int main(int argc, char **argv) {
         return -1;
     } else {
         LOG("Current resolution mode is %d", mode);
+         //LOG("Current resolution  is %dx%d", width, height);
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
     LOG("Start preview...");

@@ -12,6 +12,7 @@ extern "C" {
 #define IMAGE_ENCODING_JPEG FOURCC('J', 'P', 'E', 'G')
 #define IMAGE_ENCODING_RAW_BAYER FOURCC('R', 'A', 'W', ' ')
 #define IMAGE_ENCODING_BMP FOURCC('B', 'M', 'P', ' ')
+#define IMAGE_ENCODING_PNG FOURCC('P', 'N', 'G',' ')
 
 #define VIDEO_ENCODING_H264 FOURCC('H', '2', '6', '4')
 
@@ -289,7 +290,6 @@ int arducam_set_raw_callback(CAMERA_INSTANCE camera_instance, OUTPUT_CALLBACK ca
  @note The actual width and height of the raw bayer format and the yuv420 format are aligned, width 32 bytes aligned, and height 16 byte aligned.
  * */
 BUFFER *arducam_capture(CAMERA_INSTANCE camera_instance, IMAGE_FORMAT *format, int timeout);
-
 /**
  * Used to release the memory occupied by the buffer.
  * 

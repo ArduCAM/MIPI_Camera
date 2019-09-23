@@ -31,7 +31,6 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
     fclose(file);
     arducam_release_buffer(buffer);
 }
-
 int main(int argc, char **argv) {
     CAMERA_INSTANCE camera_instance;
     int width = 0, height = 0;

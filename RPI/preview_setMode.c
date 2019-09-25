@@ -11,7 +11,6 @@
 int main(int argc, char **argv) {
     CAMERA_INSTANCE camera_instance;
     int mode = atoi(argv[1]);
-    //int focusVal = atoi(argv[2]);
     LOG("Open camera...");
     int res = arducam_init_camera(&camera_instance);
     if (res) {
@@ -33,8 +32,6 @@ int main(int argc, char **argv) {
         if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, FOCUS_VAL)) {
             LOG("Failed to set focus, the camera may not support this control.");
              }
-
-    
     LOG("Start preview...");
     PREVIEW_PARAMS preview_params = {
         .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen

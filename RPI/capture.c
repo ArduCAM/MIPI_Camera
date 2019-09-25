@@ -11,7 +11,7 @@
                    //IMAGE_ENCODING_JPEG
                    //IMAGE_ENCODING_BMP
                    //IMAGE_ENCODING_PNG
-IMAGE_FORMAT fmt = {IMAGE_ENCODING_PNG, 50};
+IMAGE_FORMAT fmt = {IMAGE_ENCODING_JPEG, 50};
 void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
   
     // The actual width and height of the IMAGE_ENCODING_RAW_BAYER format and the IMAGE_ENCODING_I420 format are aligned, 
@@ -21,7 +21,7 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
             LOG("Failed to set focus, the camera may not support this control.");
         }
         usleep(1000*10);
-    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 3000);
+    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 6000);
     if (!buffer) {
         LOG("capture timeout.");
         return;
@@ -31,6 +31,7 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
     fclose(file);
     arducam_release_buffer(buffer);
 }
+
 int main(int argc, char **argv) {
     CAMERA_INSTANCE camera_instance;
     int width = 0, height = 0;

@@ -196,6 +196,13 @@ int arducam_init_camera2(CAMERA_INSTANCE *camera_instance, struct camera_interfa
  * @param width Pointer of type int, Used to specify the width and return to the actual width.
  * @param height Pointer of type int, Used to specify the height and return to the actual height.
  * @return error code , 0 success, !0 error.
+ * example:
+ @code
+    width = 1920;
+    height = 1080;
+    res = arducam_set_resolution(camera_instance, &width, &height);
+ @endcode
+ @note Some boards have multiple camera interfaces.
  * */
 int arducam_set_resolution(CAMERA_INSTANCE camera_instance, int *width, int *height);
 

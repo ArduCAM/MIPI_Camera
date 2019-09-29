@@ -71,7 +71,6 @@ int main(int argc, char **argv) {
     }
 #endif
     usleep(1000 * 1000 * 10);
-
     width = 3280;
     height = 2464;
     LOG("Setting the resolution...");

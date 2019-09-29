@@ -43,15 +43,40 @@ int main(int argc, char **argv) {
         LOG("init camera status = %d", res);
         return -1;
     }
-    width = 1920;
-    height = 1080;
-    LOG("Setting the resolution...");
-    res = arducam_set_resolution(camera_instance, &width, &height);
+
+    struct format support_fmt;
+    int index = 0;
+    char fourcc[5];
+    fourcc[4] = '\0';
+    while (!arducam_get_support_formats(camera_instance, &support_fmt, index++)) {
+        strncpy(fourcc, (char *)&support_fmt.pixelformat, 4);
+        LOG("mode: %d, width: %d, height: %d, pixelformat: %s, desc: %s", 
+            support_fmt.mode, support_fmt.width, support_fmt.height, fourcc, 
+            support_fmt.description);
+    }
+    index = 0;
+    struct camera_ctrl support_cam_ctrl;
+    while (!arducam_get_support_controls(camera_instance, &support_cam_ctrl, index++)) {
+        int value = 0;
+        if (arducam_get_control(camera_instance, support_cam_ctrl.id, &value)) {
+            LOG("Get ctrl %s fail.", support_cam_ctrl.desc);
+        }
+        LOG("index: %d, CID: 0x%08X, desc: %s, min: %d, max: %d, default: %d, current: %d",
+            index - 1, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
+            support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
+    }
+    printf("Please choose sensor mode: ");
+    int mode = (int)(getchar()-'0');
+    
+    LOG("Setting the mode...");
+   // res = arducam_set_resolution(camera_instance, &width, &height);
+    printf("choose the mode %d\r\n", mode );
+    res = arducam_set_mode(camera_instance,mode);
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
     } else {
-        LOG("Current resolution is %dx%d", width, height);
+        LOG("Current mode  is %d", mode);
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
 #if defined(SOFTWARE_AE_AWB)
@@ -59,17 +84,17 @@ int main(int argc, char **argv) {
     arducam_software_auto_exposure(camera_instance, 1);
     LOG("Enable Software Auto White Balance...");
     arducam_software_auto_white_balance(camera_instance, 1);
-    LOG("Waiting for automatic adjustment to complete...");
+   LOG("Waiting for automatic adjustment to complete...");
     usleep(1000 * 1000 * 1);
 #endif
     if(fmt.encoding == IMAGE_ENCODING_JPEG){
-        sprintf(file_name, "%dx%d.jpg", width, height);
+        sprintf(file_name, "mode%d.jpg", mode);
     }
     if(fmt.encoding == IMAGE_ENCODING_BMP){
-        sprintf(file_name, "%dx%d.bmp", width, height);
+        sprintf(file_name, "mode%d.bmp", mode);
     }
     if(fmt.encoding == IMAGE_ENCODING_PNG){
-        sprintf(file_name, "%dx%d.png", width, height);
+        sprintf(file_name, "mode%d.png", mode);
     } 
     LOG("Capture image %s...", file_name);
     save_image(camera_instance, file_name);

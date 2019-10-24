@@ -32,7 +32,7 @@ $ ./enable_i2c_vc.sh
 Alter running the script, reboot will be required.
 
 ## Install support package
-`sudo apt-get update && sudo apt-get install libopencv-dev`
+`sudo apt-get update && sudo apt-get install libzbar-dev libopencv-dev`
 
 `sudo apt-get install python-opencv`
 
@@ -62,9 +62,9 @@ $ ./preview
 In the preview.c example, it will demo how to do preview in different resolution and camera control parameters.
 
 ```bash
-$ ./preview_resolution
+$ ./preview_setMode [mode]
 ```
-It is a variant to preview demo, which allows user to enter the resolution option.
+In the preview_setMode example, it will demo how to do preview the Specified mode.
 
 ```bash
 $ ./preview_setMode
@@ -73,9 +73,9 @@ It is a variant to preview demo, which allows user to enter mode parameter from 
 
 ## Capture Example
 ```bash
-$ ./capture
+$ ./capture [mode]
 ```
-In the capture.c example, it will capture diffferent resolution JPEG images.
+In the capture.c example, it will capture diffferent resolution in with different encoder, support JPEG BMP PNG.
 
 ```bash
 $ ./capture_raw

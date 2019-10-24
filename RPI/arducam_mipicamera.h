@@ -214,6 +214,17 @@ int arducam_set_resolution(CAMERA_INSTANCE camera_instance, int *width, int *hei
  * @return error code , 0 success, !0 error.
  */
 int arducam_set_mode(CAMERA_INSTANCE camera_instance, int mode);
+/**
+ * @brief Set sensor mode.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param mode Mode index.(You can use the list_format program to view the supported modes.)
+ * @param lens_table_path used to choose the lens shading fix table 
+ * @return error code , 0 success, !0 error.
+ */
+
+int arducam_set_mode_fix_lens(CAMERA_INSTANCE camera_instance, int mode);
+
 
 /**
  * @brief Get the current format.
@@ -313,6 +324,16 @@ void arducam_release_buffer(BUFFER *buffer);
  * */
 int arducam_start_preview(CAMERA_INSTANCE camera_instance, PREVIEW_PARAMS *preview_params);
 
+
+/**
+ * Turn on image preview
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param preview_params Preview parameter,Use default parameters if NULL.
+ * @param lens_table_path choose the table path
+ * @return error code , 0 success, !0 error.
+ * */
+int arducam_start_preview_fix_lens(CAMERA_INSTANCE camera_instance, PREVIEW_PARAMS *preview_params, char *lens_table_path);
 /**
  * Turn off image preview
  * 
@@ -495,7 +516,11 @@ BUFFER *arducam_unpack_raw10_to_raw8(uint8_t *buff_in, int width, int height);
  */
 BUFFER *arducam_unpack_raw10_to_raw16(uint8_t *buff_in, int width, int height);
 
-int arducam_set_mode(CAMERA_INSTANCE camera_instance, int mode);
+void arducam_manual_set_awb_compensation(uint32_t r_gain, uint32_t b_gain);
+//void arducam_manual_set_awb_compensation(uint32_t r_gain, uint32_t b_gain);
+
+
+//int arducam_set_mode(CAMERA_INSTANCE camera_instance, int mode);
 
 #ifdef __cplusplus
 }

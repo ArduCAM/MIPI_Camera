@@ -8,7 +8,8 @@
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 #define SET_CONTROL 0
 #define FOCUS_VAL  270
-
+#define WHITE_BALANCE 1
+#define AUTO_EXPOSURE 0
 int SAMPLE_Preview_Usage(char* sPrgNm)
 {
     CAMERA_INSTANCE camera_instance;
@@ -45,7 +46,6 @@ int SAMPLE_Preview_Usage(char* sPrgNm)
     return 0;
 }
 
-
 int main(int argc, char **argv) {
     CAMERA_INSTANCE camera_instance;
     if (argc < 2)
@@ -76,6 +76,16 @@ int main(int argc, char **argv) {
         if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, FOCUS_VAL)) {
             LOG("Failed to set focus, the camera may not support this control.");
              }
+#if WHITE_BALANCE
+         LOG("Enable Auto White Balance...");
+    if (arducam_software_auto_white_balance(camera_instance, 1)) {
+        LOG("Mono camera does not support automatic white balance.");
+    }
+#endif
+#if AUTO_EXPOSURE
+	 LOG("Enable Software Auto Exposure...");
+    arducam_software_auto_exposure(camera_instance, 1);
+#endif
     LOG("Start preview...");
     PREVIEW_PARAMS preview_params = {
         .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen
@@ -83,6 +93,7 @@ int main(int argc, char **argv) {
         .window = {0, 0, 1280, 720}, // Destination rectangle for the preview window.
     };
     res = arducam_start_preview(camera_instance, &preview_params);
+
     if (res) {
         LOG("start preview status = %d", res);
         return -1;
@@ -118,25 +129,58 @@ int main(int argc, char **argv) {
         LOG("Mono camera does not support automatic white balance.");
     }
 #endif
-    usleep(1000 * 1000 * 100);
+uint32_t r_gain_conpensation, b_gain_conpensation;
+uint32_t minus = 0;
+while(1){
+    uint32_t temp, r_temp, b_temp;
+    printf("\r\nR_gain_conpensation: ");
+    temp = (int)(getchar()-'0');  r_temp = 0;
+    while(temp != -38){  //enter
+        if(temp == -3){  //-
+          minus = 1;
+        }else{
+            r_temp = r_temp*10 + temp;
+        }
+       temp = (int)(getchar()-'0');
+    }
+    if(minus){
+        r_gain_conpensation = -r_temp;
+    }
+    else{
+        r_gain_conpensation = r_temp;
+    }
+    
+    printf("Set r_gain_conpensation to %d\r\n",r_gain_conpensation);
+    arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
 
-   // width = 3280;
-   // height = 2464;
-//    LOG("Setting the resolution...");
-//    res = arducam_set_resolution(camera_instance, &width, &height);
-//    if (res) {
-//        LOG("set resolution status = %d", res);
-//        return -1;
-//    } else {
-//        LOG("Current resolution is %dx%d", width, height);
-//    }
-    usleep(1000 * 1000 * 100);
+    printf("\r\nB_gain_conpensation:  ");
+    temp = (int)(getchar()-'0');  b_temp = 0;minus = 0;
+    while(temp != -38){  //enter
+        if(temp == -3){  //-
+          minus = 1;
+        }else{
+            b_temp = b_temp*10 + temp;
+        }
+       
+        temp = (int)(getchar()-'0');
+    }
+    if(minus){
+        b_gain_conpensation = -b_temp;
+    }
+    else{
+       b_gain_conpensation = b_temp;
+    }
+    printf("Set b_gain_conpensation to %d\r\n",b_gain_conpensation);
+    arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
+}
+
+
+    usleep(1000 * 1000 * 10);
     LOG("Stop preview...");
     res = arducam_stop_preview(camera_instance);
     if (res) {
         LOG("stop preview status = %d", res);
     }
-
     LOG("Close camera...");
     res = arducam_close_camera(camera_instance);
     if (res) {

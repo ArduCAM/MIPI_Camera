@@ -46,13 +46,13 @@ int main(int argc, char **argv) {
     }
     usleep(1000 * 1000 * 2);
     LOG("Setting the exposure...");
-    if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, 0x10)) {
+    if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, 0x1F00)) {
         LOG("Failed to set exposure, the camera may not support this control.");
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
     usleep(1000 * 1000 * 2);
     LOG("Setting the exposure...");
-    if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, 3000)) {
+    if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, 0x1F00)) {
         LOG("Failed to set exposure, the camera may not support this control.");
     }
     usleep(1000 * 1000 * 2);
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     }
     usleep(1000 * 1000 * 2);
     LOG("Enable Auto Exposure...");
-    arducam_software_auto_exposure(camera_instance, 1);
+    //arducam_software_auto_exposure(camera_instance, 1);
 
     usleep(1000 * 1000 * 2);
     LOG("Enable Auto White Balance...");

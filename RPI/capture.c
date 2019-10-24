@@ -7,6 +7,7 @@
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 
 #define FOCUS_VAL  270  //range(0-65535)
+
 #define SOFTWARE_AE_AWB
                    //IMAGE_ENCODING_JPEG
                    //IMAGE_ENCODING_BMP
@@ -21,7 +22,7 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
             LOG("Failed to set focus, the camera may not support this control.");
         }
         usleep(1000*10);
-    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 6000);
+    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 12000);
     if (!buffer) {
         LOG("capture timeout.");
         return;
@@ -71,7 +72,7 @@ int main(int argc, char **argv) {
     LOG("Setting the mode...");
    // res = arducam_set_resolution(camera_instance, &width, &height);
     printf("choose the mode %d\r\n", mode );
-    res = arducam_set_mode(camera_instance,mode);
+    res= arducam_set_mode(camera_instance, mode);
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
     }
 #if defined(SOFTWARE_AE_AWB)
     LOG("Enable Software Auto Exposure...");
-    arducam_software_auto_exposure(camera_instance, 1);
+    arducam_software_auto_exposure(camera_instance, 0);
     LOG("Enable Software Auto White Balance...");
     arducam_software_auto_white_balance(camera_instance, 1);
    LOG("Waiting for automatic adjustment to complete...");

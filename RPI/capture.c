@@ -21,6 +21,14 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
         if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, FOCUS_VAL)) {
             LOG("Failed to set focus, the camera may not support this control.");
         }
+#if defined(SOFTWARE_AE_AWB)
+    LOG("Enable Software Auto Exposure...");
+    arducam_software_auto_exposure(camera_instance, 1);
+    LOG("Enable Software Auto White Balance...");
+    arducam_software_auto_white_balance(camera_instance, 1);
+   LOG("Waiting for automatic adjustment to complete...");
+    usleep(1000 * 1000 * 1);
+#endif
         usleep(1000*10);
     BUFFER *buffer = arducam_capture(camera_instance, &fmt, 12000);
     if (!buffer) {
@@ -80,14 +88,7 @@ int main(int argc, char **argv) {
         LOG("Current mode  is %d", mode);
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
-#if defined(SOFTWARE_AE_AWB)
-    LOG("Enable Software Auto Exposure...");
-    arducam_software_auto_exposure(camera_instance, 0);
-    LOG("Enable Software Auto White Balance...");
-    arducam_software_auto_white_balance(camera_instance, 1);
-   LOG("Waiting for automatic adjustment to complete...");
-    usleep(1000 * 1000 * 1);
-#endif
+
     if(fmt.encoding == IMAGE_ENCODING_JPEG){
         sprintf(file_name, "mode%d.jpg", mode);
     }

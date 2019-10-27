@@ -17,12 +17,10 @@ Now the supported MIPI camera modules are below:
 
 # Video Demo
 [![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/MIPI_Camera_RPI_Demo.jpg)](https://youtu.be/XJ2VrwXMhy4 "Up to 18MP MIPI Cameras for Raspberry Pi")       
-
 # Prerequisites
 ## Enable the camera
-[![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/EnableCameraPart1.png)]  
-
-[![IMAGE ALT TEXT](https://github.com/arducam/MIPI_Camera/blob/master/RPI/images/EnableCameraPart2.png)]
+![IMAGE ALT TEXT](images/EnableCameraPart1.png)
+![IMAGE ALT TEXT](images/EnableCameraPart2.png)
 
 ## Enable i2c_vc
 ```bash
@@ -36,14 +34,89 @@ Alter running the script, reboot will be required.
 
 `sudo apt-get install python-opencv`
 
-## Install the SDK library
+## Download and install the SDK library
 ```bash
-$ make install
+$ pi@raspberrypi:~ $ git clone https://github.com/ArduCAM/MIPI_Camera.git
 ```
+![IMAGE ALT TEXT](images/1.png)
+```bash
+pi@raspberrypi:~ $ cd MIPI_Camera/RPI/
+```
+![IMAGE ALT TEXT](images/2.png)
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ make install 
+```
+![IMAGE ALT TEXT](images/3.png)
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ chmod +x enable_i2c_vc.sh 
+```
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./enable_i2c_vc.sh
+```
+![IMAGE ALT TEXT](images/4.png)
+Then click Y/y to reboot now
+
 ## Compile the Examples
 ```bash
-$ make clean && make
+pi@raspberrypi:~ $ cd MIPI_Camera/RPI/
 ```
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ make clean && make 
+```
+![IMAGE ALT TEXT](images/5.png)
+## How to use the detail demo? (use the ov9281 as an example)
+- list_format
+This demo is used to check all resolution the sensor you are using supports
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./list_format 
+```
+![IMAGE ALT TEXT](images/6.png)
+
+- preview_setMode
+This demo is used to preview with the mode we set.
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./preview_setMode
+```
+![IMAGE ALT TEXT](images/7.png)
+If I choose mode 0 run the command to run our camera
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./preview_setMode 0
+```
+![IMAGE ALT TEXT](images/8.png)
+If anything is normal, you will see the preiew image shown as the below image
+![IMAGE ALT TEXT](images/9.png)
+- capture
+This demo is used to capture one frame image with the special encoder format we set .
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./capture
+```
+![IMAGE ALT TEXT](images/10.png)
+If I choose mode 0
+![IMAGE ALT TEXT](images/11.png)
+The default encoder is jpeg, if you want to change others, just opne the capture.c file 
+and change here:
+
+![IMAGE ALT TEXT](images/12.png)
+
+Notice: if you want to get the image with BMP or PNG encoder, you shuold set the encoder time to more. I advise you set 12000 in the capture.c file.
+![IMAGE ALT TEXT](images/13.png)
+
+## How to use Arducam stereo hat? (use the ov9281 as an example)
+- Hardware setup
+![IMAGE ALT TEXT](images/14.png)
+- Run the ./list_format to check which mode is used for stereo hat.
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./list_format 
+```
+![IMAGE ALT TEXT](images/15.png)
+From the print message, we can see the mode 7-11 ared used for stereo hat. I choose the mode7 as a demo
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./preview_setMode 7
+```
+![IMAGE ALT TEXT](images/16.png)
+
+![IMAGE ALT TEXT](images/17.png)
+
 
 ## Optional Settings
 Edit /boot/config.txt file.
@@ -55,21 +128,11 @@ Modify gpu_mem size with proper size, recommend to use
 `gpu_mem=180` for 16MP or higher camera board.
 
 # Running the Examples
-## Preview Example
-```bash
-$ ./preview
-```
-In the preview.c example, it will demo how to do preview in different resolution and camera control parameters.
-
+## preview_setMode Example 
 ```bash
 $ ./preview_setMode [mode]
 ```
-In the preview_setMode example, it will demo how to do preview the Specified mode.
-
-```bash
-$ ./preview_setMode
-```
-It is a variant to preview demo, which allows user to enter mode parameter from the certain mode listed from ./list_format command.
+In the preview_setMode example, it will demo how to do preview the Specified mode listed from ./list_format command.
 
 ## Capture Example
 ```bash
@@ -208,3 +271,8 @@ Run the script camera_i2c from utils folder and send output message to support@a
 `sudo chmod +x camera_i2c rpi3-gpiovirtbuf`  
 
 `./camera_i2c`
+
+![IMAGE ALT TEXT](images/18.png)
+You should set the gpu_mem to bigger. Open the config.txt file. Then reboot
+![IMAGE ALT TEXT](images/19.png)
+

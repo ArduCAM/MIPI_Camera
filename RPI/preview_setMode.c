@@ -7,7 +7,6 @@
 #include <stdlib.h> //add support atoi
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 #define SET_CONTROL 0
-#define FOCUS_VAL  270
 #define WHITE_BALANCE 1
 #define AUTO_EXPOSURE 0
 int SAMPLE_Preview_Usage(char* sPrgNm)
@@ -72,10 +71,6 @@ int main(int argc, char **argv) {
          //LOG("Current resolution  is %dx%d", width, height);
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
-        LOG("Setting the focus...");
-        if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, FOCUS_VAL)) {
-            LOG("Failed to set focus, the camera may not support this control.");
-             }
 #if WHITE_BALANCE
          LOG("Enable Auto White Balance...");
     if (arducam_software_auto_white_balance(camera_instance, 1)) {
@@ -133,7 +128,7 @@ uint32_t r_gain_conpensation, b_gain_conpensation;
 uint32_t minus = 0;
 while(1){
     uint32_t temp, r_temp, b_temp;
-    printf("\r\nR_gain_conpensation: ");
+    printf("\r\nR_gain_compensation: ");
     temp = (int)(getchar()-'0');  r_temp = 0;
     while(temp != -38){  //enter
         if(temp == -3){  //-
@@ -150,10 +145,10 @@ while(1){
         r_gain_conpensation = r_temp;
     }
     
-    printf("Set r_gain_conpensation to %d\r\n",r_gain_conpensation);
+    printf("Set r_gain_compensation to %d\r\n",r_gain_conpensation);
     arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
 
-    printf("\r\nB_gain_conpensation:  ");
+    printf("\r\nB_gain_compensation:  ");
     temp = (int)(getchar()-'0');  b_temp = 0;minus = 0;
     while(temp != -38){  //enter
         if(temp == -3){  //-
@@ -170,7 +165,7 @@ while(1){
     else{
        b_gain_conpensation = b_temp;
     }
-    printf("Set b_gain_conpensation to %d\r\n",b_gain_conpensation);
+    printf("Set b_gain_compensation to %d\r\n",b_gain_conpensation);
     arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
 }
 

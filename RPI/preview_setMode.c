@@ -59,17 +59,44 @@ int main(int argc, char **argv) {
     if (res) {
         LOG("init camera status = %d", res);
         return -1;
+    } 
+
+    struct format support_fmt;
+    int index = 0;
+    char fourcc[5];
+    fourcc[4] = '\0';
+    while (!arducam_get_support_formats(camera_instance, &support_fmt, index++)) {
+        strncpy(fourcc, (char *)&support_fmt.pixelformat, 4);
+        LOG("mode: %d, width: %d, height: %d, pixelformat: %s, desc: %s", 
+            support_fmt.mode, support_fmt.width, support_fmt.height, fourcc, 
+            support_fmt.description);
     }
+    index = 0;
+    struct camera_ctrl support_cam_ctrl;
+    while (!arducam_get_support_controls(camera_instance, &support_cam_ctrl, index++)) {
+        int value = 0;
+        if (arducam_get_control(camera_instance, support_cam_ctrl.id, &value)) {
+            LOG("Get ctrl %s fail.", support_cam_ctrl.desc);
+        }
+        LOG("index: %d, CID: 0x%08X, desc: %s, min: %d, max: %d, default: %d, current: %d",
+            index - 1, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
+            support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
+    }
+
+    
+
+    
+    
     LOG("Setting the resolution...");
    // res = arducam_set_resolution(camera_instance, &width, &height);
-    res= arducam_set_mode(camera_instance, mode);
+    res= arducam_set_mode(camera_instance, mode); 
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
     } else {
         LOG("Current resolution mode is %d", mode);
          //LOG("Current resolution  is %dx%d", width, height);
-        LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
+      //  LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
 #if WHITE_BALANCE
          LOG("Enable Auto White Balance...");
@@ -168,8 +195,6 @@ while(1){
     printf("Set b_gain_compensation to %d\r\n",b_gain_conpensation);
     arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
 }
-
-
     usleep(1000 * 1000 * 10);
     LOG("Stop preview...");
     res = arducam_stop_preview(camera_instance);

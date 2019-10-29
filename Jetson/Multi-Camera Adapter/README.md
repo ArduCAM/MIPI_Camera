@@ -1,9 +1,9 @@
-##Jetson Naono Multi Camera Adapter
+## Jetson Naono Multi Camera Adapter
 
-###Install GPIO lib
+### Install GPIO lib
 sudo pip install Jetson.GPIO
 
-###Setting User Permissions
+### Setting User Permissions
 In order to use the Jetson GPIO Library, the correct user permissions/groups must be set first.
 
 Create a new gpio user group. Then add your user to the newly created group.
@@ -21,6 +21,6 @@ Please note that for the new rule to take place, you may either need to reboot o
 
 Visiting here to get more detail information[Jetson.GPIO - Linux for Tegra](https://pypi.org/project/Jetson.GPIO/#description)
 
-###Run demo 
+### Run demo 
 `sudo python JetsonNanoAdapterTestDemo.py`  
 This demo will preview each camera and get one snapshot. Then stored it to local path.

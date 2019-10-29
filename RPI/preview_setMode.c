@@ -7,34 +7,107 @@
 #include <stdlib.h> //add support atoi
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 #define SET_CONTROL 0
-#define FOCUS_VAL  270
-int main(int argc, char **argv) {
+#define WHITE_BALANCE 1
+#define AUTO_EXPOSURE 0
+int SAMPLE_Preview_Usage(char* sPrgNm)
+{
     CAMERA_INSTANCE camera_instance;
-    int mode = atoi(argv[1]);
-    //int focusVal = atoi(argv[2]);
-    LOG("Open camera...");
     int res = arducam_init_camera(&camera_instance);
     if (res) {
         LOG("init camera status = %d", res);
         return -1;
     }
+    struct format support_fmt;
+    int index = 0;
+    char fourcc[5];
+    fourcc[4] = '\0';
+    while (!arducam_get_support_formats(camera_instance, &support_fmt, index++)) {
+        strncpy(fourcc, (char *)&support_fmt.pixelformat, 4);
+        LOG("mode: %d, width: %d, height: %d, pixelformat: %s, desc: %s", 
+            support_fmt.mode, support_fmt.width, support_fmt.height, fourcc, 
+            support_fmt.description);
+    }
+    index = 0;
+    struct camera_ctrl support_cam_ctrl;
+    while (!arducam_get_support_controls(camera_instance, &support_cam_ctrl, index++)) {
+        int value = 0;
+        if (arducam_get_control(camera_instance, support_cam_ctrl.id, &value)) {
+            LOG("Get ctrl %s fail.", support_cam_ctrl.desc);
+        }
+        LOG("index: %d, CID: 0x%08X, desc: %s, min: %d, max: %d, default: %d, current: %d",
+            index - 1, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
+            support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
+    }
+    res = arducam_close_camera(camera_instance);
+    LOG("close camera status = %d", res);
+    LOG("Please check and choose the mode your sensor support", res);
+    printf("Usage : %s <mode>\n", sPrgNm);
+    return 0;
+}
+
+int main(int argc, char **argv) {
+    CAMERA_INSTANCE camera_instance;
+    if (argc < 2)
+    {
+        
+        SAMPLE_Preview_Usage(argv[0]);
+        return -1;
+    }
+    int mode = atoi(argv[1]);
+    LOG("Open camera...");
+    int res = arducam_init_camera(&camera_instance);
+    if (res) {
+        LOG("init camera status = %d", res);
+        return -1;
+    } 
+
+    struct format support_fmt;
+    int index = 0;
+    char fourcc[5];
+    fourcc[4] = '\0';
+    while (!arducam_get_support_formats(camera_instance, &support_fmt, index++)) {
+        strncpy(fourcc, (char *)&support_fmt.pixelformat, 4);
+        LOG("mode: %d, width: %d, height: %d, pixelformat: %s, desc: %s", 
+            support_fmt.mode, support_fmt.width, support_fmt.height, fourcc, 
+            support_fmt.description);
+    }
+    index = 0;
+    struct camera_ctrl support_cam_ctrl;
+    while (!arducam_get_support_controls(camera_instance, &support_cam_ctrl, index++)) {
+        int value = 0;
+        if (arducam_get_control(camera_instance, support_cam_ctrl.id, &value)) {
+            LOG("Get ctrl %s fail.", support_cam_ctrl.desc);
+        }
+        LOG("index: %d, CID: 0x%08X, desc: %s, min: %d, max: %d, default: %d, current: %d",
+            index - 1, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
+            support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
+    }
+
+    
+
+    
+    
     LOG("Setting the resolution...");
    // res = arducam_set_resolution(camera_instance, &width, &height);
-    res= arducam_set_mode(camera_instance, mode);
+    res= arducam_set_mode(camera_instance, mode); 
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
     } else {
         LOG("Current resolution mode is %d", mode);
          //LOG("Current resolution  is %dx%d", width, height);
-        LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
+      //  LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
-        LOG("Setting the focus...");
-        if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, FOCUS_VAL)) {
-            LOG("Failed to set focus, the camera may not support this control.");
-             }
-
-    
+#if WHITE_BALANCE
+         LOG("Enable Auto White Balance...");
+    if (arducam_software_auto_white_balance(camera_instance, 1)) {
+        LOG("Mono camera does not support automatic white balance.");
+    }
+#endif
+#if AUTO_EXPOSURE
+	 LOG("Enable Software Auto Exposure...");
+    arducam_software_auto_exposure(camera_instance, 1);
+#endif
     LOG("Start preview...");
     PREVIEW_PARAMS preview_params = {
         .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen
@@ -42,6 +115,7 @@ int main(int argc, char **argv) {
         .window = {0, 0, 1280, 720}, // Destination rectangle for the preview window.
     };
     res = arducam_start_preview(camera_instance, &preview_params);
+
     if (res) {
         LOG("start preview status = %d", res);
         return -1;
@@ -77,25 +151,56 @@ int main(int argc, char **argv) {
         LOG("Mono camera does not support automatic white balance.");
     }
 #endif
-    usleep(1000 * 1000 * 100);
+uint32_t r_gain_conpensation, b_gain_conpensation;
+uint32_t minus = 0;
+while(1){
+    uint32_t temp, r_temp, b_temp;
+    printf("\r\nR_gain_compensation: ");
+    temp = (int)(getchar()-'0');  r_temp = 0;
+    while(temp != -38){  //enter
+        if(temp == -3){  //-
+          minus = 1;
+        }else{
+            r_temp = r_temp*10 + temp;
+        }
+       temp = (int)(getchar()-'0');
+    }
+    if(minus){
+        r_gain_conpensation = -r_temp;
+    }
+    else{
+        r_gain_conpensation = r_temp;
+    }
+    
+    printf("Set r_gain_compensation to %d\r\n",r_gain_conpensation);
+    arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
 
-   // width = 3280;
-   // height = 2464;
-//    LOG("Setting the resolution...");
-//    res = arducam_set_resolution(camera_instance, &width, &height);
-//    if (res) {
-//        LOG("set resolution status = %d", res);
-//        return -1;
-//    } else {
-//        LOG("Current resolution is %dx%d", width, height);
-//    }
-    usleep(1000 * 1000 * 100);
+    printf("\r\nB_gain_compensation:  ");
+    temp = (int)(getchar()-'0');  b_temp = 0;minus = 0;
+    while(temp != -38){  //enter
+        if(temp == -3){  //-
+          minus = 1;
+        }else{
+            b_temp = b_temp*10 + temp;
+        }
+       
+        temp = (int)(getchar()-'0');
+    }
+    if(minus){
+        b_gain_conpensation = -b_temp;
+    }
+    else{
+       b_gain_conpensation = b_temp;
+    }
+    printf("Set b_gain_compensation to %d\r\n",b_gain_conpensation);
+    arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
+}
+    usleep(1000 * 1000 * 10);
     LOG("Stop preview...");
     res = arducam_stop_preview(camera_instance);
     if (res) {
         LOG("stop preview status = %d", res);
     }
-
     LOG("Close camera...");
     res = arducam_close_camera(camera_instance);
     if (res) {

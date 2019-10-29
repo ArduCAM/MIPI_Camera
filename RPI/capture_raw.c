@@ -9,7 +9,7 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name, int width, in
     IMAGE_FORMAT fmt = {IMAGE_ENCODING_RAW_BAYER, 0};
     // The actual width and height of the IMAGE_ENCODING_RAW_BAYER format and the IMAGE_ENCODING_I420 format are aligned, 
     // width 32 bytes aligned, and height 16 byte aligned.
-    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 3000);
+    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 6000);
     if (!buffer) {
         LOG("capture timeout.");
         return;
@@ -37,8 +37,8 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    width = 1920;
-    height = 1080;
+    width =2592;//2336;//4672;//1920;
+    height =1944;//1748;//3496;//1080;
     LOG("Setting the resolution...");
     res = arducam_set_resolution(camera_instance, &width, &height);
     if (res) {
@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
     LOG("Capture image %s...", file_name);
     save_image(camera_instance, file_name, width, height);
 
-    width = 3280;
-    height = 2464;
+    width = 1280;
+    height = 720;
     LOG("Setting the resolution...");
     res = arducam_set_resolution(camera_instance, &width, &height);
     if (res) {

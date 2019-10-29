@@ -26,7 +26,6 @@ int main(int argc, char **argv) {
         LOG("init camera status = %d", res);
         return -1;
     }
-
     width = 1920;
     height = 1080;
     LOG("Setting the resolution...");
@@ -83,9 +82,6 @@ int main(int argc, char **argv) {
         LOG("start preview status = %d", res);
         return -1;
     }
-
-
-
 
     usleep(1000 * 1000 * 20);
     LOG("Stop preview...");

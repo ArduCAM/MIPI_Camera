@@ -37,15 +37,16 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    width =2592;//2336;//4672;//1920;
-    height =1944;//1748;//3496;//1080;
+   // width =2592;//2336;//4672;//1920;
+    //height =1944;//1748;//3496;//1080;
     LOG("Setting the resolution...");
-    res = arducam_set_resolution(camera_instance, &width, &height);
+   // res = arducam_set_resolution(camera_instance, &width, &height);
+    res = arducam_set_mode(camera_instance, 6);
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
     } else {
-        LOG("Current resolution is %dx%d", width, height);
+      //  LOG("Current resolution is %dx%d", width, height);
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
 

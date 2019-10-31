@@ -7,11 +7,14 @@ CXXFLAGS?= -I. -g -std=gnu++11 `pkg-config --cflags --libs opencv`
 LDFLAGS	?=
 LIBS	:= -larducam_mipicamera
 OLIB	:= lib
-examples:= preview_setMode capture video list_format capture_raw raw_callback read_write_sensor_reg ov9281_external_trigger 2MPGlobalShuterDemo preview-camera0 preview-dualcam capture-dualcam video2stdout capture2opencv qrcode_detection  
+examples:= preview_setMode arducamstill capture video list_format capture_raw raw_callback read_write_sensor_reg ov9281_external_trigger 2MPGlobalShuterDemo preview-camera0 preview-dualcam capture-dualcam video2stdout capture2opencv qrcode_detection  
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(examples)
+
+arducamstill: arducamstill.c
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 preview: preview.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)

@@ -65,6 +65,17 @@ pi@raspberrypi:~/MIPI_Camera/RPI $ make clean && make
 ```
 ![IMAGE ALT TEXT](images/5.png)
 ## How to use the detail demo? (use the ov9281 as an example)
+- arducamstill
+This demo is used to how to run the Arducam mipi camera 
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -? 
+```
+![IMAGE ALT TEXT](images/arducamstill_1.png)
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -t 0 -m 1 -awb 1 -ae 1
+```
+![IMAGE ALT TEXT](images/arducamstill_2.png)
+
 - list_format
 This demo is used to check all resolution the sensor you are using supports
 ```bash

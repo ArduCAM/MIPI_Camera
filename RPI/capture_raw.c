@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     //height =1944;//1748;//3496;//1080;
     LOG("Setting the resolution...");
    // res = arducam_set_resolution(camera_instance, &width, &height);
-    res = arducam_set_mode(camera_instance, 6);
+    res = arducam_set_mode(camera_instance, 0);
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;

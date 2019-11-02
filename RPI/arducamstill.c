@@ -64,7 +64,6 @@ unsigned int frame_count = 0;
 int raw_callback(BUFFER *buffer) {
      frame_count++;
          if(time(NULL) - begin >= 1){
-         	//fprintf(stderr,"------fps %d   buffer length = %d flags = %d\n",frame_count,buffer->length,buffer->flags);
              printf("\rCurrent framerate: ");
              printf("%d fps",frame_count);   
              fflush(stdout);  
@@ -73,15 +72,10 @@ int raw_callback(BUFFER *buffer) {
          }
     return 0;
 }
-
-
 int main(int argc, char **argv) {
   CAMERA_INSTANCE camera_instance;
   RASPISTILL_STATE state;
-
- 
   default_status(&state);
-  
   if (arducam_parse_cmdline(argc, argv, &state))
    {
      return 0;
@@ -92,7 +86,6 @@ int main(int argc, char **argv) {
         LOG("init camera status = %d", res);
         return -1;
     }  
-    
     res = arducam_set_raw_callback(camera_instance, raw_callback, NULL);
         if (res) {
             LOG("Failed to start raw data callback.");
@@ -119,8 +112,6 @@ int main(int argc, char **argv) {
                index - 1, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
                support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
        }
-
-    
     res =  arducam_set_mode(camera_instance, state.mode);
     if (res) {
         LOG("set resolution status = %d", res);
@@ -339,7 +330,6 @@ void raspicli_display_help(const COMMAND_LIST *commands, const int num_commands)
 
    if (!commands)
       return;
-
    for (i = 0; i < num_commands; i++)
    {
       fprintf(stdout, "-%s, -%s\t: %s\n", commands[i].abbrev,

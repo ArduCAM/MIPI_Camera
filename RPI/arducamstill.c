@@ -86,11 +86,7 @@ int main(int argc, char **argv) {
         LOG("init camera status = %d", res);
         return -1;
     }  
-    res = arducam_set_raw_callback(camera_instance, raw_callback, NULL);
-        if (res) {
-            LOG("Failed to start raw data callback.");
-            return -1;
-        }
+    
     struct format support_fmt;
        int index = 0;
        char fourcc[5];
@@ -113,6 +109,7 @@ int main(int argc, char **argv) {
                support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
        }
     res =  arducam_set_mode(camera_instance, state.mode);
+       
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
@@ -128,6 +125,11 @@ int main(int argc, char **argv) {
         LOG("start preview status = %d", res);
         return -1;
     }
+    res = arducam_set_raw_callback(camera_instance, raw_callback, NULL);
+        if (res) {
+            LOG("Failed to start raw data callback.");
+            return -1;
+        }
     printCurrentMode(camera_instance);
     if(state.ae_state){
         if (arducam_software_auto_exposure(camera_instance, 1)) {

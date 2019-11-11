@@ -287,6 +287,31 @@ int arducam_set_video_callback(CAMERA_INSTANCE camera_instance, VIDEO_ENCODER_ST
 int arducam_set_raw_callback(CAMERA_INSTANCE camera_instance, OUTPUT_CALLBACK callback, void *userdata);
 
 /**
+ * Set yuv data output callback.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param callback Callback method, this method will be called when there is data return.
+ * @param userdata Userdata, which will be a member of the buffer parameter in the callback function.
+ * @return error code , 0 success, !0 error.
+ * 
+ * example:
+ @code
+    int yuv_callback(BUFFER *buffer) {
+        buffer->userdata;
+    }
+    // start callback
+    if(arducam_set_yuv_callback(camera_instance, yuv_callback, NULL)){
+        printf("set yuv data callback failed.");
+    }
+    // stop callback
+    arducam_set_yuv_callback(camera_instance, NULL, NULL)
+ @endcode
+ @note If you do a time-consuming operation in the callback, it will affect other parts, such as preview, video encoding(This issue may be fixed in the future).
+ @note The buffer will be automatically released after the callback function ends.
+ * */
+int arducam_set_yuv_callback(CAMERA_INSTANCE camera_instance, OUTPUT_CALLBACK callback, void *userdata);
+
+/**
  * Get single frame data.
  * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
  * @param format The data format to be obtained.

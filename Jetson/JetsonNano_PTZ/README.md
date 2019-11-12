@@ -10,5 +10,11 @@
 
 ##FocuserExample.py
 * zoom-lens controller.
+```bash 
+lee@lee-desktop:~/JetsonNano_PTZ$ python FocuserExample.py
+```
+![IMAGE ALT TEXT](data/command.png)
+
+![IMAGE ALT TEXT](data/key_value.png)
 
 ![IMAGE ALT TEXT](data/Arducam_Controller.png)

@@ -10,4 +10,4 @@
 
 ##FocuserExample.py
 * zoom-lens controller.
-* ![alt text](./data/Arducam Controller.png"Arducam Controller")
+![IMAGE ALT TEXT](data/Arducam Controller.png"Arducam Controller")

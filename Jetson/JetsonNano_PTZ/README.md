@@ -1,3 +1,6 @@
+## Hardware Connection
+![IMAGE ALT TEXT](data/hardware.png)
+
 ##Focuser.py
 * zoom-lens basic control component.
 

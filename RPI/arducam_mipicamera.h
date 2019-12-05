@@ -542,6 +542,8 @@ BUFFER *arducam_unpack_raw10_to_raw8(uint8_t *buff_in, int width, int height);
 BUFFER *arducam_unpack_raw10_to_raw16(uint8_t *buff_in, int width, int height);
 
 void arducam_manual_set_awb_compensation(uint32_t r_gain, uint32_t b_gain);
+//void arducam_manual_set_awb_compensation(CAMERA_INSTANCE camera_instance, uint32_t r_gain, uint32_t b_gain);
+
 //void arducam_manual_set_awb_compensation(uint32_t r_gain, uint32_t b_gain);
 
 

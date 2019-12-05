@@ -24,8 +24,9 @@ enum
    CommandMode,
    CommandAutowhitebalance,
    CommandAutoexposure,
+   CommandRgain,
+   CommandBgain,
    CommandHelp,
-   
 };
 
 static COMMAND_LIST cmdline_commands[] =
@@ -35,19 +36,21 @@ static COMMAND_LIST cmdline_commands[] =
    { CommandMode, "-mode",    "m",    "Set sensor mode", 1},
    { CommandAutowhitebalance, "-autowhitebalance",    "awb",    "Enable or disable awb", 1 },
    { CommandAutoexposure, "-autoexposure",    "ae",    "Enable or disable ae", 1 },
+   { CommandRgain, "-awbrgain",    "rgain",  "Set R channel gian vaue <0 to 65535>", 1 },
+   { CommandBgain, "-awbbgain",    "bgain",  "Set B channel gian vaue <0 to 65535>", 1 },
    { CommandHelp, "-help",    "?",    "This help information", 0},
-   
 };
 
 typedef struct
 {
    int timeout;                        // Time taken before frame is grabbed and app then shuts down. Units are milliseconds
    int quality;                        // JPEG quality setting (1-100)
+   int rgain;
+   int bgain;
    int mode;                         // sensor mode
    int awb_state;                      // auto white balance state
    int ae_state;                       // auto exposure state
 } RASPISTILL_STATE;
-
 
 static int arducam_parse_cmdline(int argc, char **argv, RASPISTILL_STATE *state);
 int raspicli_get_command_id(const COMMAND_LIST *commands, const int num_commands, const char *arg, int *num_parameters);
@@ -56,8 +59,6 @@ static void default_status(RASPISTILL_STATE *state);
 void raspicli_display_help(const COMMAND_LIST *commands, const int num_commands);
 void raspipreview_display_help();
 void printCurrentMode(CAMERA_INSTANCE camera_instance);
-
-
 
 time_t begin = 0;
 unsigned int frame_count = 0;
@@ -141,6 +142,10 @@ int main(int argc, char **argv) {
         LOG("Mono camera does not support automatic white balance.");
         }
     }
+    
+    if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
+               LOG("Failed to set focus, the camera may not support this control.");
+           }
     if(state.timeout == 0){
         while(1){
             usleep(1000);
@@ -180,6 +185,7 @@ int main(int argc, char **argv) {
         LOG("Mono camera does not support automatic white balance.");
     }
 #endif
+   
     LOG("Stop preview...");
     res = arducam_stop_preview(camera_instance);
     if (res) {
@@ -202,8 +208,6 @@ int raspicli_get_command_id(const COMMAND_LIST *commands, const int num_commands
 
    if (!commands || !num_parameters || !arg)
       return -1;
-
-
    for (j = 0; j < num_commands; j++)
    {
       if (!strcmp(arg, commands[j].command) ||
@@ -215,7 +219,6 @@ int raspicli_get_command_id(const COMMAND_LIST *commands, const int num_commands
          break;
       }
    }
-
    return command_id;
 }
 
@@ -258,7 +261,6 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
                  if (sscanf(argv[i + 1], "%d", &state->timeout) == 1)
                  {
                     i++;
-                   // printf("state->timeout = %d\r\n", state->timeout);
                  }
                  else
                     valid = 0;
@@ -273,6 +275,38 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
                        fprintf(stderr, "Setting max quality = 100\n");
                        state->quality = 100;
                     }
+                    i++;
+                 }
+                else
+                    valid = 0;
+                break;
+              }
+             case CommandRgain:
+              {
+                if (sscanf(argv[i + 1], "%u", &state->rgain) == 1)
+                 {
+                    if (state->rgain > 0xFFFF)
+                    {
+                       fprintf(stderr, "Setting max rgain = 0xFFFF\n");
+                       state->rgain = 0xFFFF;                    
+                    }
+                    i++;
+                    arducam_manual_set_awb_compensation(state->rgain,state->bgain);
+                 }
+                else
+                    valid = 0;
+                break;
+              }
+             case CommandBgain:
+              {
+                if (sscanf(argv[i + 1], "%u", &state->bgain) == 1)
+                 {
+                    if (state->bgain > 0xFFFF)
+                    {
+                       fprintf(stderr, "Setting max bgain = 0xFFFF\n");
+                       state->bgain = 0xFFFF;
+                    }
+                    arducam_manual_set_awb_compensation(state->rgain,state->bgain);
                     i++;
                  }
                 else
@@ -300,8 +334,7 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
                 else
                     valid = 0;
                 break;
-              } 
-            
+              }   
         }
     }
 
@@ -318,6 +351,8 @@ static void default_status(RASPISTILL_STATE *state)
 {
     state->mode = 0;
     state->ae_state =1;
+    state->rgain =100;
+    state->bgain =100;
     state->awb_state = 1;
     state->quality = 50;
     state->timeout = 5000;

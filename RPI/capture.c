@@ -6,8 +6,6 @@
 #include <unistd.h>
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 
-#define FOCUS_VAL  270  //range(0-65535)
-
 #define SOFTWARE_AE_AWB
                    //IMAGE_ENCODING_JPEG
                    //IMAGE_ENCODING_BMP
@@ -17,10 +15,6 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name) {
   
     // The actual width and height of the IMAGE_ENCODING_RAW_BAYER format and the IMAGE_ENCODING_I420 format are aligned, 
     // width 32 bytes aligned, and height 16 byte aligned.
-    LOG("Setting the focus...");
-        if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, FOCUS_VAL)) {
-            LOG("Failed to set focus, the camera may not support this control.");
-        }
 #if defined(SOFTWARE_AE_AWB)
     LOG("Enable Software Auto Exposure...");
     arducam_software_auto_exposure(camera_instance, 1);
@@ -88,6 +82,9 @@ int main(int argc, char **argv) {
         LOG("Current mode  is %d", mode);
         LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
     }
+    if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
+               LOG("Failed to set focus, the camera may not support this control.");
+           }
 
     if(fmt.encoding == IMAGE_ENCODING_JPEG){
         sprintf(file_name, "mode%d.jpg", mode);

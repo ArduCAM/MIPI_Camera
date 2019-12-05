@@ -125,6 +125,8 @@ int main(int argc, char **argv) {
     if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
         LOG("Failed to set focus, the camera may not support this control.");
     }
+	arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, 0x10)
+	
     usleep(1000 * 1000 * 2);
     LOG("Setting the exposure...");
     if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, 0x10)) {
@@ -151,7 +153,7 @@ int main(int argc, char **argv) {
         LOG("Mono camera does not support automatic white balance.");
     }
 #endif
-uint32_t r_gain_conpensation, b_gain_conpensation;
+uint32_t r_gain_compensation, b_gain_compensation;
 uint32_t minus = 0;
 while(1){
     uint32_t temp, r_temp, b_temp;
@@ -172,8 +174,8 @@ while(1){
         r_gain_conpensation = r_temp;
     }
     
-    printf("Set r_gain_compensation to %d\r\n",r_gain_conpensation);
-    arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
+    printf("Set r_gain_compensation to %d\r\n",r_gain_compensation);
+    arducam_manual_set_awb_compensation(r_gain_compensation,b_gain_compensation);
 
     printf("\r\nB_gain_compensation:  ");
     temp = (int)(getchar()-'0');  b_temp = 0;minus = 0;
@@ -192,8 +194,8 @@ while(1){
     else{
        b_gain_conpensation = b_temp;
     }
-    printf("Set b_gain_compensation to %d\r\n",b_gain_conpensation);
-    arducam_manual_set_awb_compensation(r_gain_conpensation,b_gain_conpensation);
+    printf("Set b_gain_compensation to %d\r\n",b_gain_compensation);
+    arducam_manual_set_awb_compensation(r_gain_compensation,b_gain_compensation);
 }
     usleep(1000 * 1000 * 10);
     LOG("Stop preview...");

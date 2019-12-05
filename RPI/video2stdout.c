@@ -59,6 +59,7 @@ static void default_status(VIDEO_ENCODER_STATE *state) {
     state->addSPSTiming = 0;                  // zero or one
     state->slices = 1;
     /**********************H264 only**************************************/
+    
 }
 
 int main(int argc, char **argv) {
@@ -72,7 +73,6 @@ int main(int argc, char **argv) {
         LOG("init camera status = %d", res);
         return -1;
     }
-
     width = 1920;
     height = 1080;
     LOG("Setting the resolution...");

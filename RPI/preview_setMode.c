@@ -168,10 +168,10 @@ while(1){
        temp = (int)(getchar()-'0');
     }
     if(minus){
-        r_gain_conpensation = -r_temp;
+        r_gain_compensation = -r_temp;
     }
     else{
-        r_gain_conpensation = r_temp;
+        r_gain_compensation = r_temp;
     }
     
     printf("Set r_gain_compensation to %d\r\n",r_gain_compensation);
@@ -189,10 +189,10 @@ while(1){
         temp = (int)(getchar()-'0');
     }
     if(minus){
-        b_gain_conpensation = -b_temp;
+        b_gain_compensation = -b_temp;
     }
     else{
-       b_gain_conpensation = b_temp;
+       b_gain_compensation = b_temp;
     }
     printf("Set b_gain_compensation to %d\r\n",b_gain_compensation);
     arducam_manual_set_awb_compensation(r_gain_compensation,b_gain_compensation);

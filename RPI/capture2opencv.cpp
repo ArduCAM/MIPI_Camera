@@ -17,6 +17,11 @@
 #define VCOS_ALIGN_DOWN(p,n) (((ptrdiff_t)(p)) & ~((n)-1))
 #define VCOS_ALIGN_UP(p,n) VCOS_ALIGN_DOWN((ptrdiff_t)(p)+(n)-1,(n))
 
+cv::Mat dynamicThreWihteBalance(cv::Mat image);
+int getWhitePointThre(cv::Mat whiteRegion);
+void WhitePointMask(cv::Mat Cr, cv::Mat Cb, cv::Mat RL);
+cv::Mat choiceWhitePoint(cv::Mat YCrCb, int mBlocks, int nBlocks);
+
 using namespace cv;
 using namespace std;
 

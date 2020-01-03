@@ -12,7 +12,6 @@
 #include<iostream>
 #include <vector>
 #include <opencv2/xphoto/white_balance.hpp>
-#include "whiteBalance.hpp"
 
 #define VCOS_ALIGN_DOWN(p,n) (((ptrdiff_t)(p)) & ~((n)-1))
 #define VCOS_ALIGN_UP(p,n) VCOS_ALIGN_DOWN((ptrdiff_t)(p)+(n)-1,(n))

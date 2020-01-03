@@ -5,9 +5,9 @@ CXX		:= $(CROSS_COMPILE)g++
 CFLAGS 	?= -I. -g -O0 -std=gnu11
 CXXFLAGS?= -I. -g -std=gnu++11 `pkg-config --cflags --libs opencv`
 LDFLAGS	?=
-LIBS	:= -larducam_mipicamera
+LIBS	:= -larducam_mipicamera -lpthread
 OLIB	:= lib
-examples:= preview_setMode arducamstill capture video list_format capture_raw raw_callback yuv_callback read_write_sensor_reg ov9281_external_trigger 2MPGlobalShuterDemo preview-camera0 preview-dualcam capture-dualcam video2stdout capture2opencv qrcode_detection  
+examples:= manualFocusPreview video4cameras preview_setMode arducamstill capture video list_format capture_raw raw_callback yuv_callback read_write_sensor_reg ov9281_external_trigger 2MPGlobalShuterDemo preview-camera0 preview-dualcam capture-dualcam video2stdout capture2opencv qrcode_detection  
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -15,13 +15,12 @@ all: $(examples)
 
 arducamstill: arducamstill.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
-
 preview: preview.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
-	
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)	
 preview_setMode: preview_setMode.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
-
+video4cameras: video4cameras.c
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 capture: capture.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 	
@@ -59,6 +58,9 @@ capture-dualcam : capture-dualcam.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 ov9281_external_trigger : ov9281_external_trigger.c
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+
+manualFocusPreview: manualFocusPreview.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 	
 2MPGlobalShuterDemo: 2MPGlobalShuterDemo.c

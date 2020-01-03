@@ -1,4 +1,4 @@
-# Introudction
+# Introduction
 This the MIPI camera software SDK for Raspberry pi platform, which allow you connect global shutter cameras and upto 18MP cameras on RPI board.
 
 Now the supported MIPI camera modules are below:
@@ -138,7 +138,7 @@ Modify gpu_mem size with proper size, recommend to use
 
 `gpu_mem=180` for 16MP or higher camera board.
 
-# Running the Examples
+# Running the examples
 ## preview_setMode Example 
 ```bash
 $ ./preview_setMode [mode]
@@ -165,7 +165,7 @@ In the raw_callback.c example, it is callback version of capture_raw example.
 ```bash
 $ ./video
 ```
-In the video.c example, it will record the video in H246 format.
+In the video.c example, it will record the video in H264 format.
 
 ## Camera Control Query Example
 ```bash
@@ -202,7 +202,7 @@ $  gst-launch-1.0  -v tcpclientsrc  host=x.x.x.x  port=5000 ! decodebin ! autovi
 
 ### Example 2:
 
-Raspberry pi side command:  (x.x.x.x is your Raspberry Pi IP address)
+Raspberry Pi side command:  (x.x.x.x is your Raspberry Pi IP address)
 ```bash
 $ ./video2stdout | gst-launch-1.0 -v fdsrc ! h264parse !  rtph264pay config-interval=1 pt=96 ! gdppay ! tcpserversink host=x.x.x.x port=5000
 ```

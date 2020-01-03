@@ -12,15 +12,15 @@
 #include<iostream>
 #include <vector>
 #include <opencv2/xphoto/white_balance.hpp>
-#include "whiteBalance.hpp"
-
-#define VCOS_ALIGN_DOWN(p,n) (((ptrdiff_t)(p)) & ~((n)-1))
-#define VCOS_ALIGN_UP(p,n) VCOS_ALIGN_DOWN((ptrdiff_t)(p)+(n)-1,(n))
+//#include "whiteBalance.hpp"
 
 cv::Mat dynamicThreWihteBalance(cv::Mat image);
 int getWhitePointThre(cv::Mat whiteRegion);
 void WhitePointMask(cv::Mat Cr, cv::Mat Cb, cv::Mat RL);
 cv::Mat choiceWhitePoint(cv::Mat YCrCb, int mBlocks, int nBlocks);
+
+#define VCOS_ALIGN_DOWN(p,n) (((ptrdiff_t)(p)) & ~((n)-1))
+#define VCOS_ALIGN_UP(p,n) VCOS_ALIGN_DOWN((ptrdiff_t)(p)+(n)-1,(n))
 
 using namespace cv;
 using namespace std;

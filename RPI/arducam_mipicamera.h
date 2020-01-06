@@ -387,7 +387,7 @@ int arducam_close_camera(CAMERA_INSTANCE camera_instance);
     arducam_reset_control(camera_instance, V4L2_CID_EXPOSURE);
  @endcode
  * */
-int arducam_reset_control(CAMERA_INSTANCE *camera_instance, int ctrl_id);
+int arducam_reset_control(CAMERA_INSTANCE camera_instance, int ctrl_id);
 
 /**
  * Set camera control.

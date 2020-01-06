@@ -7,7 +7,10 @@
 
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 #define SET_CONTROL 0
-
+#ifndef vcos_assert
+#define vcos_assert(cond) \
+   ( (cond) ? (void)0 : (VCOS_ASSERT_BKPT, VCOS_ASSERT_MSG("%s", #cond)) )
+#endif
 typedef struct
 {
    int id;
@@ -26,6 +29,9 @@ enum
    CommandAutoexposure,
    CommandRgain,
    CommandBgain,
+   CommandCapture,
+   CommandRaw,
+   CommandEncoding,
    CommandHelp,
 };
 
@@ -34,23 +40,40 @@ static COMMAND_LIST cmdline_commands[] =
    { CommandTimeout, "-timeout",    "t",  "Time (in ms) before takes picture and shuts down (if not specified, loop)", 1 },
    { CommandQuality, "-quality",    "q",  "Set jpeg quality <0 to 100>", 1 },
    { CommandMode, "-mode",    "m",    "Set sensor mode", 1},
-   { CommandAutowhitebalance, "-autowhitebalance",    "awb",    "Enable or disable awb", 1 },
-   { CommandAutoexposure, "-autoexposure",    "ae",    "Enable or disable ae", 1 },
+   { CommandAutowhitebalance, "-autowhitebalance",    "awb",    "Enable or disable awb", 1 },
+
+   { CommandAutoexposure, "-autoexposure",    "ae",    "Enable or disable ae", 1 },
    { CommandRgain, "-awbrgain",    "rgain",  "Set R channel gian vaue <0 to 65535>", 1 },
    { CommandBgain, "-awbbgain",    "bgain",  "Set B channel gian vaue <0 to 65535>", 1 },
-   { CommandHelp, "-help",    "?",    "This help information", 0},
+   { CommandCapture, "-capture",    "o",    "usd to get one frame", 0},
+   { CommandRaw,     "-raw",        "r",  "Add raw bayer data to jpeg metadata", 0 },
+   { CommandEncoding,"-encoding",   "e",  "Encoding to use for output file (jpg, bmp, gif, png)", 1},
+   { CommandHelp, "-help",    "?",    "This help information", 0},
 };
-
 typedef struct
 {
    int timeout;                        // Time taken before frame is grabbed and app then shuts down. Units are milliseconds
    int quality;                        // JPEG quality setting (1-100)
-   int rgain;
-   int bgain;
-   int mode;                         // sensor mode
+   uint32_t encoding;                   // Encoding to use for the output file.
+   int rgain;                          // red gain compensation
+   int bgain;                          // blue gain compensation
+   int mode;                           // sensor mode
    int awb_state;                      // auto white balance state
    int ae_state;                       // auto exposure state
+   int glCapture;                      // Save the GL frame-buffer instead of camera output
+   char *linkname;                     // filename of output file
 } RASPISTILL_STATE;
+static struct
+{
+   char *format;
+   uint32_t encoding;
+} encoding_xref[] =
+{
+   {"jpg", IMAGE_ENCODING_JPEG},
+   {"bmp", IMAGE_ENCODING_BMP},
+   {"png", IMAGE_ENCODING_PNG},
+};
+static int encoding_xref_size = sizeof(encoding_xref) / sizeof(encoding_xref[0]);
 
 static int arducam_parse_cmdline(int argc, char **argv, RASPISTILL_STATE *state);
 int raspicli_get_command_id(const COMMAND_LIST *commands, const int num_commands, const char *arg, int *num_parameters);
@@ -59,7 +82,7 @@ static void default_status(RASPISTILL_STATE *state);
 void raspicli_display_help(const COMMAND_LIST *commands, const int num_commands);
 void raspipreview_display_help();
 void printCurrentMode(CAMERA_INSTANCE camera_instance);
-
+void save_image(CAMERA_INSTANCE camera_instance, const char *name, uint32_t encoding, int quality);
 time_t begin = 0;
 unsigned int frame_count = 0;
 int raw_callback(BUFFER *buffer) {
@@ -153,6 +176,10 @@ int main(int argc, char **argv) {
         }else{
             usleep(1000 * state.timeout);
         }
+    if(state.linkname){
+        save_image(camera_instance, state.linkname, state.encoding, state.quality);
+        free (state.linkname);
+    }
     
 #if SET_CONTROL
     LOG("Reset the focus...");
@@ -334,13 +361,49 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
                 else
                     valid = 0;
                 break;
-              }   
+              } 
+            case CommandEncoding :
+            {
+                int len = strlen(argv[i + 1]);
+                valid = 0;
+
+                if (len)
+                {
+                    int j;
+                    for (j=0; j<encoding_xref_size; j++)
+                    {
+                    if (strcmp(encoding_xref[j].format, argv[i+1]) == 0)
+                    {
+                        state->encoding = encoding_xref[j].encoding;
+                        valid = 1;
+                        i++;
+                        break;
+                    }
+                    }
+                }
+                break;
+            }
+            case  CommandCapture:
+            {
+                int len = strlen(argv[i+1]);
+                printf("len = %d\r\n",len);
+                if(len){
+                    state->linkname = malloc(len + 10);
+                    if (state->linkname)
+                    strncpy(state->linkname, argv[i + 1], len+1);
+                    i++;
+                     printf("name= %s\r\n",state->linkname);
+                }else{
+                    valid = 0;
+                    break;
+                }
+            }
         }
     }
 
    if (!valid)
    {
-      //fprintf(stderr, "Invalid command line option (%s)\n", argv[i-1]);
+      fprintf(stderr, "Invalid command line option (%s)\n", argv[i-1]);
       return 1;
    }
    return 0;
@@ -356,6 +419,8 @@ static void default_status(RASPISTILL_STATE *state)
     state->awb_state = 1;
     state->quality = 50;
     state->timeout = 5000;
+    state->linkname = NULL;
+    state->encoding = IMAGE_ENCODING_JPEG;
 }
 
 
@@ -391,5 +456,20 @@ void printCurrentMode(CAMERA_INSTANCE camera_instance){
                currentFormat.mode, currentFormat.width, currentFormat.height, fourcc, 
                currentFormat.description);
 }
+void save_image(CAMERA_INSTANCE camera_instance, const char *name, uint32_t encoding, int quality) {
+    IMAGE_FORMAT fmt = {encoding, quality};
+    // The actual width and height of the IMAGE_ENCODING_RAW_BAYER format and the IMAGE_ENCODING_I420 format are aligned, 
+    // width 32 bytes aligned, and height 16 byte aligned.
+    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 12000);
+    if (!buffer) {
+        LOG("capture timeout.");
+        return;
+    }
+    FILE *file = fopen(name, "wb");
+    fwrite(buffer->data, buffer->length, 1, file);
+    fclose(file);
+    arducam_release_buffer(buffer);
+}
+
 
 

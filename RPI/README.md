@@ -22,13 +22,6 @@ Now the supported MIPI camera modules are below:
 ![IMAGE ALT TEXT](images/EnableCameraPart1.png)
 ![IMAGE ALT TEXT](images/EnableCameraPart2.png)
 
-## Enable i2c_vc
-```bash
-$ chmod +x ./enable_i2c_vc.sh
-$ ./enable_i2c_vc.sh
-```
-Alter running the script, reboot will be required.
-
 ## Install support package
 `sudo apt-get update && sudo apt-get install libzbar-dev libopencv-dev`
 

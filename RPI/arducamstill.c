@@ -1,16 +1,32 @@
 #include "arducam_mipicamera.h"
 #include <linux/v4l2-controls.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-
+#include <termios.h>
+#include <pthread.h>
+#include <stdlib.h>
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 #define SET_CONTROL 0
 #ifndef vcos_assert
 #define vcos_assert(cond) \
    ( (cond) ? (void)0 : (VCOS_ASSERT_BKPT, VCOS_ASSERT_MSG("%s", #cond)) )
 #endif
+#define UP    1
+#define DOWN  2
+#define LEFT  3
+#define RIGHT 4
+#define W     5
+#define S     6
+#define A     7
+#define D     8
+
+#define exposureStep  50
+#define focusStep     5
+#define rgainStep     10
+#define bgainStep     10
 typedef struct
 {
    int id;
@@ -41,7 +57,6 @@ static COMMAND_LIST cmdline_commands[] =
    { CommandQuality, "-quality",    "q",  "Set jpeg quality <0 to 100>", 1 },
    { CommandMode, "-mode",    "m",    "Set sensor mode", 1},
    { CommandAutowhitebalance, "-autowhitebalance",    "awb",    "Enable or disable awb", 1 },
-
    { CommandAutoexposure, "-autoexposure",    "ae",    "Enable or disable ae", 1 },
    { CommandRgain, "-awbrgain",    "rgain",  "Set R channel gian vaue <0 to 65535>", 1 },
    { CommandBgain, "-awbbgain",    "bgain",  "Set B channel gian vaue <0 to 65535>", 1 },
@@ -54,7 +69,7 @@ typedef struct
 {
    int timeout;                        // Time taken before frame is grabbed and app then shuts down. Units are milliseconds
    int quality;                        // JPEG quality setting (1-100)
-   uint32_t encoding;                   // Encoding to use for the output file.
+   uint32_t encoding;                  // Encoding to use for the output file.
    int rgain;                          // red gain compensation
    int bgain;                          // blue gain compensation
    int mode;                           // sensor mode
@@ -63,6 +78,19 @@ typedef struct
    int glCapture;                      // Save the GL frame-buffer instead of camera output
    char *linkname;                     // filename of output file
 } RASPISTILL_STATE;
+
+typedef struct{
+int frameCnt;
+int exposureVal;
+int focusVal;
+int  redGain ;
+int  blueGain;
+int  key;
+}GLOBAL_VAL;
+typedef struct {
+    CAMERA_INSTANCE camera_instance;
+    RASPISTILL_STATE state;
+}PROCESS_STRUCT;
 static struct
 {
    char *format;
@@ -84,33 +112,116 @@ void raspipreview_display_help();
 void printCurrentMode(CAMERA_INSTANCE camera_instance);
 void save_image(CAMERA_INSTANCE camera_instance, const char *name, uint32_t encoding, int quality);
 time_t begin = 0;
-unsigned int frame_count = 0;
+GLOBAL_VAL globalParam; 
+pthread_t processCmd_pt;
+_Bool isrunning  = 1;
+
+int resetGlobalParameter(CAMERA_INSTANCE camera_instance, GLOBAL_VAL* globalParam){
+    arducam_get_control(camera_instance, V4L2_CID_EXPOSURE, &globalParam->exposureVal);
+    arducam_get_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, &globalParam->focusVal);
+    arducam_get_gain(camera_instance, &globalParam ->redGain, &globalParam ->blueGain);
+    globalParam -> frameCnt = 0;
+    globalParam -> key = 0;
+}
+int get_key_board_from_termios()
+{
+    int key_value;
+    struct termios new_config;
+    struct termios old_config;
+
+    tcgetattr(0, &old_config);
+    new_config = old_config;
+    new_config.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(0, TCSANOW, &new_config);
+    key_value = getchar();
+    tcsetattr(0, TCSANOW, &old_config);
+    return key_value;
+}
+ 
+void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalParam){
+    int keyVal = 0;
+    while(1){
+         //usleep(100);
+         keyVal= get_key_board_from_termios();
+         if(keyVal == 27){
+             keyVal= get_key_board_from_termios();
+             if(keyVal == 91){
+                keyVal= get_key_board_from_termios();
+                if(keyVal == 65){
+                   globalParam->key = UP;// up 
+                   globalParam->exposureVal += exposureStep;
+                }
+                if(keyVal == 66 ){
+                     globalParam->key = DOWN;// down 
+                     globalParam->exposureVal -= exposureStep;
+                }
+                if(keyVal == 68 ){
+                     globalParam->key = LEFT;// left
+                     globalParam->focusVal += focusStep;
+                }
+                if(keyVal == 67 ){
+                     globalParam->key = RIGHT;// right
+                     globalParam->focusVal -= focusStep;
+                }
+             }
+         }
+          if(keyVal == 119){
+             globalParam->key = W;// W
+             globalParam->redGain += rgainStep; 
+          }
+          if(keyVal == 115){
+             globalParam->key = S;// S
+             globalParam->redGain -= rgainStep; 
+          }
+          if(keyVal == 97){
+             globalParam->key = A;// A
+             globalParam->blueGain += bgainStep; 
+          }
+           if(keyVal == 100){
+             globalParam->key = D;// D
+             globalParam->blueGain -= bgainStep; 
+          }
+         if(!isrunning){
+             LOG("Please click 'Ctrl'+'C' to exit!");
+             break;
+         }
+         switch (globalParam->key){
+            case UP:   
+            case DOWN:
+            if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, globalParam->exposureVal)) {
+            LOG("Failed to set exposure, the camera may not support this control.");
+            }
+            break;
+            case LEFT:
+            case RIGHT:
+            if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE,globalParam->focusVal)) {
+             LOG("Failed to set focus, the camera may not support this control.");
+            }
+            case W:
+            case S:
+            case A:
+            case D:
+            arducam_manual_set_awb_compensation(globalParam->redGain,globalParam->blueGain);
+            break;
+         }
+         //LOG("Keyval:%d",keyVal);
+    }
+   
+   // return 0;
+}
 int raw_callback(BUFFER *buffer) {
-     frame_count++;
+       globalParam.frameCnt++;
          if(time(NULL) - begin >= 1){
-             printf("\rCurrent framerate: ");
-             printf("%d fps",frame_count);   
-             fflush(stdout);  
-            frame_count = 0;
+             printf("\r[Framerate]: %02d pfs, [Exposure]: %04d, [Focus]: %04d,[Rgain]: %04d, [Bgain]: %04d", 
+                    globalParam.frameCnt,globalParam.exposureVal,globalParam.focusVal,\
+                    globalParam.redGain, globalParam.blueGain);
+             fflush(stdout); 
+            globalParam.frameCnt = 0;
             begin = time(NULL);
          }
     return 0;
 }
-int main(int argc, char **argv) {
-  CAMERA_INSTANCE camera_instance;
-  RASPISTILL_STATE state;
-  default_status(&state);
-  if (arducam_parse_cmdline(argc, argv, &state))
-   {
-     return 0;
-   } 
-    LOG("Open camera...");
-    int res = arducam_init_camera(&camera_instance);
-    if (res) {
-        LOG("init camera status = %d", res);
-        return -1;
-    }  
-    
+int printSupportFormat(CAMERA_INSTANCE camera_instance){
     struct format support_fmt;
        int index = 0;
        char fourcc[5];
@@ -132,12 +243,78 @@ int main(int argc, char **argv) {
                index - 1, support_cam_ctrl.id, support_cam_ctrl.desc, support_cam_ctrl.min_value,
                support_cam_ctrl.max_value, support_cam_ctrl.default_value, value);
        }
-    res =  arducam_set_mode(camera_instance, state.mode);
-       
+}
+
+void prcessCmd(PROCESS_STRUCT *processData){
+    int res;
+    if(processData->state.ae_state){
+        if (arducam_software_auto_exposure(processData->camera_instance, 1)) {
+        LOG("Mono camera does not support automatic white balance.");
+        }
+    }
+    if(processData->state.awb_state){
+        if (arducam_software_auto_white_balance(processData->camera_instance, 1)) {
+        LOG("Mono camera does not support automatic white balance.");
+        }
+    }
+    if(processData->state.timeout == 0){
+        while(1){
+            usleep(1000);
+            }
+        }else{
+            usleep(1000 * processData->state.timeout);
+        }
+    if(processData->state.linkname){
+        save_image(processData->camera_instance, processData->state.linkname, \
+                   processData->state.encoding, processData->state.quality);
+        free (processData->state.linkname);
+    }
+     isrunning = 0;
+    LOG("Stop preview...");
+    res = arducam_stop_preview(processData->camera_instance);
+    if (res) {
+        LOG("stop preview status = %d", res);
+    }
+
+    LOG("Close camera...");
+    res = arducam_close_camera(processData->camera_instance);
+    if (res) {
+        LOG("close camera status = %d", res);
+    }
+   
+    pthread_join(processCmd_pt,NULL);  // wait thread finish
+}
+int main(int argc, char **argv) {
+  CAMERA_INSTANCE camera_instance;
+  RASPISTILL_STATE state;
+  PROCESS_STRUCT  processData;
+   default_status(&state);
+    LOG("Open camera...");
+    int res = arducam_init_camera(&camera_instance);
+    if (res) {
+        LOG("init camera status = %d", res);
+        return -1;
+    }
+    resetGlobalParameter(camera_instance, &globalParam);
+    
+    printSupportFormat(camera_instance);
+
+    if (arducam_parse_cmdline(argc, argv, &state))
+    {
+     return 0;
+    } 
+    res = arducam_set_mode(camera_instance, state.mode);
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
     } 
+    if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE,globalParam.focusVal)) {
+        LOG("Failed to set focus, the camera may not support this control.");
+    }
+    if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE,globalParam.exposureVal)) {
+        LOG("Failed to set exposure, the camera may not support this control.");
+    }
+    arducam_manual_set_awb_compensation(globalParam.redGain,globalParam.blueGain);      
     LOG("Start preview...");
     PREVIEW_PARAMS preview_params = {
         .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen
@@ -154,77 +331,17 @@ int main(int argc, char **argv) {
             LOG("Failed to start raw data callback.");
             return -1;
         }
-    printCurrentMode(camera_instance);
-    if(state.ae_state){
-        if (arducam_software_auto_exposure(camera_instance, 1)) {
-        LOG("Mono camera does not support automatic white balance.");
-        }
-    }
-    if(state.awb_state){
-        if (arducam_software_auto_white_balance(camera_instance, 1)) {
-        LOG("Mono camera does not support automatic white balance.");
-        }
-    }
-    
-    if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
-               LOG("Failed to set focus, the camera may not support this control.");
-           }
-    if(state.timeout == 0){
-        while(1){
-            usleep(1000);
-            }
-        }else{
-            usleep(1000 * state.timeout);
-        }
-    if(state.linkname){
-        save_image(camera_instance, state.linkname, state.encoding, state.quality);
-        free (state.linkname);
-    }
-    
-#if SET_CONTROL
-    LOG("Reset the focus...");
-    if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
-        LOG("Failed to set focus, the camera may not support this control.");
-    }
-    usleep(1000 * 1000 * 2);
-    LOG("Setting the exposure...");
-    if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, 0x1F00)) {
-        LOG("Failed to set exposure, the camera may not support this control.");
-        LOG("Notice:You can use the list_format sample program to see the resolution and control supported by the camera.");
-    }
-    usleep(1000 * 1000 * 2);
-    LOG("Setting the exposure...");
-    if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, 0x1F00)) {
-        LOG("Failed to set exposure, the camera may not support this control.");
-    }
-    usleep(1000 * 1000 * 2);
-    LOG("Setting the hfilp...");
-    if (arducam_set_control(camera_instance, V4L2_CID_HFLIP, 1)) {
-        LOG("Failed to set hflip, the camera may not support this control.");
-    }
-    usleep(1000 * 1000 * 2);
-    LOG("Enable Auto Exposure...");
-    //arducam_software_auto_exposure(camera_instance, 1);
-
-    usleep(1000 * 1000 * 2);
-    LOG("Enable Auto White Balance...");
-    if (arducam_software_auto_white_balance(camera_instance, 1)) {
-        LOG("Mono camera does not support automatic white balance.");
-    }
-#endif
-   
-    LOG("Stop preview...");
-    res = arducam_stop_preview(camera_instance);
-    if (res) {
-        LOG("stop preview status = %d", res);
-    }
-
-    LOG("Close camera...");
-    res = arducam_close_camera(camera_instance);
-    if (res) {
-        LOG("close camera status = %d", res);
-    }
-    return 0;
+ printCurrentMode(camera_instance);
+ processData.camera_instance = camera_instance;
+ processData.state = state;
+  int ret = pthread_create(&processCmd_pt, NULL, prcessCmd,&processData);
+  if(ret){
+      LOG("pthread create failed");
+      return 1;
+  }
+  while(1){
+      processKeyboardEvent(camera_instance,&globalParam);
+  }  
 }
 
 
@@ -248,7 +365,6 @@ int raspicli_get_command_id(const COMMAND_LIST *commands, const int num_commands
    }
    return command_id;
 }
-
 
 static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
     int valid =1;
@@ -413,7 +529,7 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
 static void default_status(RASPISTILL_STATE *state)
 {
     state->mode = 0;
-    state->ae_state =1;
+    state->ae_state =0;
     state->rgain =100;
     state->bgain =100;
     state->awb_state = 1;
@@ -422,7 +538,6 @@ static void default_status(RASPISTILL_STATE *state)
     state->linkname = NULL;
     state->encoding = IMAGE_ENCODING_JPEG;
 }
-
 
 void raspicli_display_help(const COMMAND_LIST *commands, const int num_commands)
 {
@@ -453,8 +568,8 @@ void printCurrentMode(CAMERA_INSTANCE camera_instance){
     strncpy(fourcc, (char *)&currentFormat.pixelformat, 4);
      printf("%c[32;40m",0x1b);  
      printf("Current mode: %d, width: %d, height: %d, pixelformat: %s, desc: %s\r\n", 
-               currentFormat.mode, currentFormat.width, currentFormat.height, fourcc, 
-               currentFormat.description);
+            currentFormat.mode, currentFormat.width, currentFormat.height, fourcc, 
+            currentFormat.description);
 }
 void save_image(CAMERA_INSTANCE camera_instance, const char *name, uint32_t encoding, int quality) {
     IMAGE_FORMAT fmt = {encoding, quality};

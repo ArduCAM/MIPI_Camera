@@ -69,6 +69,9 @@ pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -t 0 -m 1 -awb 1 -ae 1
 ```
 ![IMAGE ALT TEXT](images/arducamstill_2.png)
 
+- arducamstill add adjust exposure focus and gain functions
+![IMAGE ALT TEXT](images/keyboard.png)
+
 - list_format
 This demo is used to check all resolution the sensor you are using supports
 ```bash

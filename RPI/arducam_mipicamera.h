@@ -421,6 +421,8 @@ int arducam_set_control(CAMERA_INSTANCE camera_instance, int ctrl_id, int value)
  * */
 int arducam_get_control(CAMERA_INSTANCE camera_instance, int ctrl_id, int *value);
 
+int arducam_get_gain(CAMERA_INSTANCE camera_instance,int *rgain, int *bgain);
+
 /**
  * Get the resolution supported by the current camera
  * 

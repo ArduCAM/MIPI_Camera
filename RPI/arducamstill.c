@@ -295,8 +295,6 @@ int main(int argc, char **argv) {
         LOG("init camera status = %d", res);
         return -1;
     }
-    resetGlobalParameter(camera_instance, &globalParam);
-    
     printSupportFormat(camera_instance);
 
     if (arducam_parse_cmdline(argc, argv, &state))
@@ -308,6 +306,7 @@ int main(int argc, char **argv) {
         LOG("set resolution status = %d", res);
         return -1;
     } 
+    resetGlobalParameter(camera_instance, &globalParam);
     if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE,globalParam.focusVal)) {
         LOG("Failed to set focus, the camera may not support this control.");
     }
@@ -575,7 +574,7 @@ void save_image(CAMERA_INSTANCE camera_instance, const char *name, uint32_t enco
     IMAGE_FORMAT fmt = {encoding, quality};
     // The actual width and height of the IMAGE_ENCODING_RAW_BAYER format and the IMAGE_ENCODING_I420 format are aligned, 
     // width 32 bytes aligned, and height 16 byte aligned.
-    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 12000);
+    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 352000);
     if (!buffer) {
         LOG("capture timeout.");
         return;

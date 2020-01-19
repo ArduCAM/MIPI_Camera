@@ -72,7 +72,9 @@ int main(int argc, const char *argv[])
         LOG("start preview status = %d", res);
         return -1;
     }
-
+   if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
+        LOG("Failed to set focus, the camera may not support this control.");
+    }
 	arducam_get_control(camera_instance, V4L2_CID_EXPOSURE, &exposureValue);
     arducam_get_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, &focusValue);
     arducam_get_gain(camera_instance, &rgainValue, &bgainValue);

@@ -117,11 +117,15 @@ pthread_t processCmd_pt;
 _Bool isrunning  = 1;
 
 int resetGlobalParameter(CAMERA_INSTANCE camera_instance, GLOBAL_VAL* globalParam){
+    if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
+        LOG("Failed to set focus, the camera may not support this control.");
+    }
     arducam_get_control(camera_instance, V4L2_CID_EXPOSURE, &globalParam->exposureVal);
     arducam_get_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, &globalParam->focusVal);
     arducam_get_gain(camera_instance, &globalParam ->redGain, &globalParam ->blueGain);
     globalParam -> frameCnt = 0;
     globalParam -> key = 0;
+    
 }
 int get_key_board_from_termios()
 {
@@ -150,18 +154,31 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
                 if(keyVal == 65){
                    globalParam->key = UP;// up 
                    globalParam->exposureVal += exposureStep;
+                   if(globalParam->exposureVal > 0xFFFF){
+                      globalParam->exposureVal = 0xFFFF;
+                   }
                 }
                 if(keyVal == 66 ){
                      globalParam->key = DOWN;// down 
                      globalParam->exposureVal -= exposureStep;
+                     if(globalParam->exposureVal< 0){
+                        globalParam->exposureVal = 0;
+                     }
+                     
                 }
                 if(keyVal == 68 ){
                      globalParam->key = LEFT;// left
                      globalParam->focusVal += focusStep;
+                     if( globalParam->focusVal > 1024){
+                         globalParam->focusVal = 1024;
+                     }
                 }
                 if(keyVal == 67 ){
                      globalParam->key = RIGHT;// right
                      globalParam->focusVal -= focusStep;
+                     if(globalParam->focusVal <0){
+                         globalParam->focusVal = 0;
+                     }
                 }
              }
          }

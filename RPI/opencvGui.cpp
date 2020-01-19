@@ -72,6 +72,11 @@ int main(int argc, const char *argv[])
         LOG("start preview status = %d", res);
         return -1;
     }
+
+	arducam_get_control(camera_instance, V4L2_CID_EXPOSURE, &exposureValue);
+    arducam_get_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, &focusValue);
+    arducam_get_gain(camera_instance, &rgainValue, &bgainValue);
+    
 	while (true) {
 		// Fill the frame with a nice color
 		frame = cv::Scalar(49, 52, 49);
@@ -129,15 +134,20 @@ int main(int argc, const char *argv[])
             }
 		}
 		cvui::text(frame, x, 2*110+y-30, "focus step 1 (default)");
-		if(cvui::trackbar(frame, x, 2*110+y, barWidth, &focusValue,0,200)){
-			if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE,(int)(focusValue*1024/200.0))) {
+		if(cvui::trackbar(frame, x, 2*110+y, barWidth, &focusValue,0,1024)){
+			if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE,focusValue)) {
              LOG("Failed to set focus, the camera may not support this control.");
             }
 		}
 		cvui::text(frame, x,  3*110+y-30, "rgain, step 1 (default)");
-		cvui::trackbar(frame, x, 3*110+y, barWidth, &rgainValue,0,200);
+		if(cvui::trackbar(frame, x, 3*110+y, barWidth, &rgainValue,0,200)){
+			arducam_manual_set_awb_compensation(rgainValue,bgainValue); 
+		}
 		cvui::text(frame, x, 4*110+y-30, "bgain step 1 (default)");
-		cvui::trackbar(frame, x, 4*110+y, barWidth, &bgainValue,0,200);
+
+		if(cvui::trackbar(frame, x, 4*110+y, barWidth, &bgainValue,0,200)){
+			arducam_manual_set_awb_compensation(rgainValue,bgainValue); 
+		}
 		cvui::update();
 		// Show everything on the screen
 		cv::moveWindow(WINDOW_NAME, 1280,0);
@@ -147,6 +157,17 @@ int main(int argc, const char *argv[])
 			break;
 		}
 	}
+	LOG("Stop preview...");
+    res = arducam_stop_preview(camera_instance);
+    if (res) {
+        LOG("stop preview status = %d", res);
+    }
+
+    LOG("Close camera...");
+    res = arducam_close_camera(camera_instance);
+    if (res) {
+        LOG("close camera status = %d", res);
+    }
 	return 0;
 }
 

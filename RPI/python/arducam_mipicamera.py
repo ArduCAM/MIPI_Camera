@@ -311,7 +311,7 @@ class buffer(object):
 
 def check_status(status,func_name):
     if status != 0:
-        raise RuntimeError("{}: Unexpected result.".format(func_name))
+        raise RuntimeError("{}: Unexpected result {}.".format(func_name, status))
 
 class mipi_camera(object):
     

@@ -33,6 +33,14 @@ if __name__ == "__main__":
         frame = camera.capture(encoding = 'jpeg')
         frame.as_array.tofile("{}x{}.jpg".format(fmt[0],fmt[1]))
 
+        print("Setting the resolution...")
+        fmt = camera.set_resolution(3280, 2464)
+        set_controls(camera)
+        time.sleep(1)
+        print("Current resolution is {}".format(fmt))
+        frame = camera.capture(encoding = 'jpeg')
+        frame.as_array.tofile("{}x{}.jpg".format(fmt[0],fmt[1]))
+
         # Release memory
         del frame
         # print("Stop preview...")

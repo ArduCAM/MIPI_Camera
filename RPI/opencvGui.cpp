@@ -38,10 +38,39 @@ int buttonWidth  = 50;
 int buttonHigh	 = 30;
 int x = 10;
 int y = 40;
+void save_image(CAMERA_INSTANCE camera_instance, const char *name, uint32_t encoding, int quality);
 void cameraControlStateInit(STATE_T controlState){
 controlState.aeEnable  = 0;
 controlState.awbEnable = 0;
-
+}
+char* itoa(int num,char* str,int radix)
+{
+    char index[]="0123456789ABCDEF";
+    unsigned unum;
+    int i=0,j,k;
+    if(radix==10&&num<0)
+    {
+        unum=(unsigned)-num;
+        str[i++]='-';
+    }
+    else unum=(unsigned)num;
+    do{
+        str[i++]=index[unum%(unsigned)radix];
+        unum/=radix;
+       }while(unum);
+    str[i]='\0';
+    if(str[0]=='-')
+        k=1;
+    else
+        k=0;
+     
+    for(j=k;j<=(i-1)/2;j++)
+    {       char temp;
+        temp=str[j];
+        str[j]=str[i-1+k-j];
+        str[i-1+k-j]=temp;
+    }
+    return str;
 }
 int main(int argc, const char *argv[])
 {   
@@ -126,6 +155,25 @@ int main(int argc, const char *argv[])
 			controlState.aeEnable = 0;
 			cvui::text(frame, x+4*(buttonWidth+10), y+10, "OFF");
 		}
+
+		if (cvui::button(frame, x, y+buttonHigh, buttonWidth, buttonHigh,"Reset")) {
+			if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
+        		LOG("Failed to set focus, the camera may not support this control.");
+    		}
+			arducam_get_control(camera_instance, V4L2_CID_EXPOSURE, &exposureValue);
+    		arducam_get_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE, &focusValue);
+    		arducam_get_gain(camera_instance, &rgainValue, &bgainValue);
+		}
+		if (cvui::button(frame, x+1*(buttonWidth+10), y+buttonHigh, buttonWidth, \
+			buttonHigh,"Snapshot")) {
+			static int k = 0;
+			k++;
+            char str[8];
+            itoa(k, str, 10);
+            strcat(str, ".jpg");
+            save_image(camera_instance, str, IMAGE_ENCODING_JPEG, 80);
+            printf("Image save OK\r\n");
+		}
 		// The trackbar component uses templates to guess the type of its arguments.
 		// You have to be very explicit about the type of the value, the min and
 		// the max params. For instance, if they are double, use 100.0 instead of 100.
@@ -173,3 +221,17 @@ int main(int argc, const char *argv[])
 	return 0;
 }
 
+void save_image(CAMERA_INSTANCE camera_instance, const char *name, uint32_t encoding, int quality) {
+    IMAGE_FORMAT fmt = {encoding, quality};
+    // The actual width and height of the IMAGE_ENCODING_RAW_BAYER format and the IMAGE_ENCODING_I420 format are aligned, 
+    // width 32 bytes aligned, and height 16 byte aligned.
+    BUFFER *buffer = arducam_capture(camera_instance, &fmt, 352000);
+    if (!buffer) {
+        LOG("capture timeout.");
+        return;
+    }
+    FILE *file = fopen(name, "wb");
+    fwrite(buffer->data, buffer->length, 1, file);
+    fclose(file);
+    arducam_release_buffer(buffer);
+}

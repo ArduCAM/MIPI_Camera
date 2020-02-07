@@ -57,41 +57,73 @@ pi@raspberrypi:~ $ cd MIPI_Camera/RPI/
 pi@raspberrypi:~/MIPI_Camera/RPI $ make clean && make 
 ```
 ![IMAGE ALT TEXT](images/5.png)
-## How to use the detail demo? (use the ov9281 as an example)
-- arducamstill
-This demo is used to how to run the Arducam mipi camera 
+## How to use the release demos? (use the imx298 as an example)
+### arducamstill
+This is a comprehensive application, user can use it to preview, get image in different format and fine tuning the image quality.
+- get help
 ```bash
 pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -? 
 ```
 ![IMAGE ALT TEXT](images/arducamstill_1.png)
+![IMAGE ALT TEXT](images/arducamstill_1_1.png)
+
+- Previdew in mode 1 and enable awb enable ae
+
 ```bash
 pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -t 0 -m 1 -awb 1 -ae 1
 ```
+	- From the print message, you can see the current mode framerate .etc
+```bash
+ Current mode: 1, width: 1280, height: 960, pixelformat: pBAA, desc: (null)
+[Framerate]: 02 pfs, [Exposure]: 2680, [Focus]: 0190,[Rgain]: 0140, [Bgain]: 0070
+```
 ![IMAGE ALT TEXT](images/arducamstill_2.png)
 
-- arducamstill add adjust exposure focus and gain functions
+- Preview 5 seconds, then get a image in jpg format
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -t 5000 -m 1 -e jpg -o test.jpg
+```
+- Detail parameters
+```bash
+-t, --timeout   : Time (in ms) before takes picture and shuts down (if not specified, loop)
+-q, --quality   : Set jpeg quality <0 to 100>
+-m, --mode      : Set sensor mode
+-awb, --autowhitebalance        : Enable or disable awb
+-ae, --autoexposure     : Enable or disable ae
+-rgain, --awbrgain      : Set R channel gian vaue <0 to 65535>
+-bgain, --awbbgain      : Set B channel gian vaue <0 to 65535>
+-o, --capture   : usd to get one frame
+-r, --raw       : Add raw bayer data to jpeg metadata
+-e, --encoding  : Encoding to use for output file (jpg, bmp, gif, png)
+-?, --help      : This help information
+```
+- Fine tuning the  exposure focus and gain using the keyboard.
 ![IMAGE ALT TEXT](images/keyboard.png)
 
-- list_format
+### opencvGui
+For the convenience of users to see the effect of fine-tuning intuitively, arduacm 
+release a GUI application
+![IMAGE ALT TEXT](images/opencvGui)
+
+- Toolbar introduction
+```bash
+-Quit 		: close the application
+-AWB  		: enable and disable auto white balance function
+-AE	  		: enable and disable auto exposure function
+-Reset		: reset all parameters 
+-Snapshot	: get one frame image 
+-exposure step 1 	: fine-tuning exposure time 
+-focus step 1 		: fine-tuning focus value
+-awb rgain compensation : fine-tuning awb rgain compensation
+-awb bgain compensation : fine-tuning awb bgain compensation
+```
+## list_format
 This demo is used to check all resolution the sensor you are using supports
 ```bash
 pi@raspberrypi:~/MIPI_Camera/RPI $ ./list_format 
 ```
 ![IMAGE ALT TEXT](images/6.png)
 
-- preview_setMode
-This demo is used to preview with the mode we set.
-```bash
-pi@raspberrypi:~/MIPI_Camera/RPI $ ./preview_setMode
-```
-![IMAGE ALT TEXT](images/7.png)
-If I choose mode 0 run the command to run our camera
-```bash
-pi@raspberrypi:~/MIPI_Camera/RPI $ ./preview_setMode 0
-```
-![IMAGE ALT TEXT](images/8.png)
-If anything is normal, you will see the preiew image shown as the below image
-![IMAGE ALT TEXT](images/9.png)
 - capture
 This demo is used to capture one frame image with the special encoder format we set .
 ```bash

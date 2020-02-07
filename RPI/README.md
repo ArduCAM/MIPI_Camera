@@ -107,13 +107,13 @@ release a GUI application
 
 - Toolbar introduction
 ```bash
--Quit 		: close the application
--AWB  		: enable and disable auto white balance function
--AE	  		: enable and disable auto exposure function
--Reset		: reset all parameters 
--Snapshot	: get one frame image 
--exposure step 1 	: fine-tuning exposure time 
--focus step 1 		: fine-tuning focus value
+-Quit					: close the application
+-AWB					: enable and disable auto white balance function
+-AE						: enable and disable auto exposure function
+-Reset					: reset all parameters 
+-Snapshot				: get one frame image 
+-exposure step 1 		: fine-tuning exposure time 
+-focus step 1 			: fine-tuning focus value
 -awb rgain compensation : fine-tuning awb rgain compensation
 -awb bgain compensation : fine-tuning awb bgain compensation
 ```

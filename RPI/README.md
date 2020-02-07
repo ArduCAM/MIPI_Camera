@@ -57,7 +57,7 @@ pi@raspberrypi:~ $ cd MIPI_Camera/RPI/
 pi@raspberrypi:~/MIPI_Camera/RPI $ make clean && make 
 ```
 ![IMAGE ALT TEXT](images/5.png)
-## How to use the release demos? (use the imx298 as an example)
+## How to use release demos? (use the imx298 as an example)
 ### arducamstill
 This is a comprehensive application, user can use it to preview, get image in different format and fine tuning the image quality.
 - get help
@@ -103,7 +103,7 @@ pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -t 5000 -m 1 -e jpg -o test.jp
 ### opencvGui
 For the convenience of users to see the effect of fine-tuning intuitively, arduacm 
 release a GUI application
-![IMAGE ALT TEXT](images/opencvGui)
+![IMAGE ALT TEXT](images/opencvGui.png)
 
 - Toolbar introduction
 ```bash

@@ -120,6 +120,8 @@ pi@raspberrypi:~/MIPI_Camera/RPI $ ./opencvGui
 -awb rgain compensation : fine-tuning awb rgain compensation
 -awb bgain compensation : fine-tuning awb bgain compensation
 ```
+- Press Ctrl + C to exit the application
+
 ## list_format
 This demo is used to check all resolution the sensor you are using supports
 ```bash

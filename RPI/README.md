@@ -103,6 +103,9 @@ pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -t 5000 -m 1 -e jpg -o test.jp
 ### opencvGui
 For the convenience of users to see the effect of fine-tuning intuitively, arduacm 
 release a GUI application
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./opencvGui 
+```
 ![IMAGE ALT TEXT](images/opencvGui.png)
 
 - Toolbar introduction

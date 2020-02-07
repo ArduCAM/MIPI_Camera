@@ -189,11 +189,11 @@ int main(int argc, const char *argv[])
              LOG("Failed to set focus, the camera may not support this control.");
             }
 		}
-		cvui::text(frame, x,  3*110+y-30, "rgain, step 1 (default)");
+		cvui::text(frame, x,  3*110+y-30, "awb rgain compensation, step 1 (default)");
 		if(cvui::trackbar(frame, x, 3*110+y, barWidth, &rgainValue,0,200)){
 			arducam_manual_set_awb_compensation(rgainValue,bgainValue); 
 		}
-		cvui::text(frame, x, 4*110+y-30, "bgain step 1 (default)");
+		cvui::text(frame, x, 4*110+y-30, "awb bgain compensation step 1 (default)");
 
 		if(cvui::trackbar(frame, x, 4*110+y, barWidth, &bgainValue,0,200)){
 			arducam_manual_set_awb_compensation(rgainValue,bgainValue); 

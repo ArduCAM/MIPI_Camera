@@ -100,6 +100,7 @@ static struct
    {"jpg", IMAGE_ENCODING_JPEG},
    {"bmp", IMAGE_ENCODING_BMP},
    {"png", IMAGE_ENCODING_PNG},
+   {"raw", IMAGE_ENCODING_RAW_BAYER},
 };
 static int encoding_xref_size = sizeof(encoding_xref) / sizeof(encoding_xref[0]);
 
@@ -115,36 +116,6 @@ time_t begin = 0;
 GLOBAL_VAL globalParam; 
 pthread_t processCmd_pt;
 _Bool isrunning  = 1;
-
-char* itoa(int num,char* str,int radix)
-{
-    char index[]="0123456789ABCDEF";
-    unsigned unum;
-    int i=0,j,k;
-    if(radix==10&&num<0)
-    {
-        unum=(unsigned)-num;
-        str[i++]='-';
-    }
-    else unum=(unsigned)num;
-    do{
-        str[i++]=index[unum%(unsigned)radix];
-        unum/=radix;
-       }while(unum);
-    str[i]='\0';
-    if(str[0]=='-')
-        k=1;
-    else
-        k=0;
-     
-    for(j=k;j<=(i-1)/2;j++)
-    {       char temp;
-        temp=str[j];
-        str[j]=str[i-1+k-j];
-        str[i-1+k-j]=temp;
-    }
-    return str;
-}
 
 int resetGlobalParameter(CAMERA_INSTANCE camera_instance, GLOBAL_VAL* globalParam){
     if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
@@ -211,16 +182,6 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
                      }
                 }
              }
-         }
-         if(keyVal == 111){
-            static int k = 0;
-            char str[8];
-            k++;
-            itoa(k, str, 10);
-            strcat(str, ".jpg");
-             save_image(camera_instance, str, \
-                  IMAGE_ENCODING_JPEG, 80);
-            printf("Image save OK\r\n");
          }
           if(keyVal == 119){
              globalParam->key = W;// W

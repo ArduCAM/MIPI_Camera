@@ -230,7 +230,7 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
 int raw_callback(BUFFER *buffer) {
        globalParam.frameCnt++;
          if(time(NULL) - begin >= 1){
-             printf("\r[Framerate]: %02d pfs, [Exposure]: %04d, [Focus]: %04d,[Rgain]: %04d, [Bgain]: %04d", 
+             printf("\r[Framerate]: %02d fps, [Exposure]: %04d, [Focus]: %04d,[Rgain]: %04d, [Bgain]: %04d", 
                     globalParam.frameCnt,globalParam.exposureVal,globalParam.focusVal,\
                     globalParam.redGain, globalParam.blueGain);
              fflush(stdout); 

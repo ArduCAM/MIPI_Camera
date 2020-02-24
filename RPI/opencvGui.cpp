@@ -177,9 +177,10 @@ int main(int argc, const char *argv[])
 		// The trackbar component uses templates to guess the type of its arguments.
 		// You have to be very explicit about the type of the value, the min and
 		// the max params. For instance, if they are double, use 100.0 instead of 100.
+
 		cvui::text(frame, x, 1*110+y-30, "exposure step 1 (default)");
 		if(cvui::trackbar(frame, x, 1*110+y, barWidth, &exposureValue,0,200)){
-			if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, (int)(exposureValue*0xFFF/200.0))) {
+			if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE, (int)(exposureValue*0xFFFF/200.0))) {
             LOG("Failed to set exposure, the camera may not support this control.");
             }
 		}

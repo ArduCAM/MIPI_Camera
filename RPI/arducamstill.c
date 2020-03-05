@@ -61,8 +61,7 @@ static COMMAND_LIST cmdline_commands[] =
    { CommandRgain, "-awbrgain",    "rgain",  "Set R channel gian vaue <0 to 65535>", 1 },
    { CommandBgain, "-awbbgain",    "bgain",  "Set B channel gian vaue <0 to 65535>", 1 },
    { CommandCapture, "-capture",    "o",    "usd to get one frame", 0},
-   { CommandRaw,     "-raw",        "r",  "Add raw bayer data to jpeg metadata", 0 },
-   { CommandEncoding,"-encoding",   "e",  "Encoding to use for output file (jpg, bmp, gif, png)", 1},
+   { CommandEncoding,"-encoding",   "e",  "Encoding to use for output file (raw, jpg, bmp, gif, png)", 1},
    { CommandHelp, "-help",    "?",    "This help information", 0},
 };
 typedef struct

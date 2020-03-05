@@ -93,13 +93,15 @@ pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -t 5000 -m 1 -e jpg -o test.jp
 -rgain, --awbrgain      : Set R channel gian vaue <0 to 65535>
 -bgain, --awbbgain      : Set B channel gian vaue <0 to 65535>
 -o, --capture   : usd to get one frame
--r, --raw       : Add raw bayer data to jpeg metadata
--e, --encoding  : Encoding to use for output file (jpg, bmp, gif, png)
+-e, --encoding  : Encoding to use for output file (jpg, bmp, gif, png，raw)
 -?, --help      : This help information
 ```
 - Fine tuning the  exposure focus and gain using the keyboard.
 ![IMAGE ALT TEXT](images/keyboard.png)
-
+- After getting a good result, you can set the curruent value using arducam_set_control API. For the detail APIs, please refer to 
+```bash
+https://github.com/ArduCAM/MIPI_Camera/blob/master/RPI/arducam_mipicamera.h
+```
 ### opencvGui
 For the convenience of users to see the effect of fine-tuning intuitively, arduacm 
 release a GUI application

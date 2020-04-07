@@ -22,6 +22,8 @@
 #define S     6
 #define A     7
 #define D     8
+#define T     9
+#define C     10
 
 #define exposureStep  50
 #define focusStep     5
@@ -58,10 +60,11 @@ static COMMAND_LIST cmdline_commands[] =
    { CommandMode, "-mode",    "m",    "Set sensor mode", 1},
    { CommandAutowhitebalance, "-autowhitebalance",    "awb",    "Enable or disable awb", 1 },
    { CommandAutoexposure, "-autoexposure",    "ae",    "Enable or disable ae", 1 },
-   { CommandRgain, "-awbrgain",    "rgain",  "Set R channel gian vaue <0 to 65535>", 1 },
-   { CommandBgain, "-awbbgain",    "bgain",  "Set B channel gian vaue <0 to 65535>", 1 },
-   { CommandCapture, "-capture",    "o",    "usd to get one frame", 0},
-   { CommandEncoding,"-encoding",   "e",  "Encoding to use for output file (raw, jpg, bmp, gif, png)", 1},
+   { CommandRgain, "-awbrgain",    "rgain",  "Set R channel gain value <0 to 65535>", 1 },
+   { CommandBgain, "-awbbgain",    "bgain",  "Set B channel gain value <0 to 65535>", 1 },
+   { CommandCapture, "-capture",    "o",    "used to get one frame", 0},
+   { CommandRaw,     "-raw",        "r",  "Add raw bayer data to jpeg metadata", 0 },
+   { CommandEncoding,"-encoding",   "e",  "Encoding to use for output file (jpg, bmp, gif, png)", 1},
    { CommandHelp, "-help",    "?",    "This help information", 0},
 };
 typedef struct
@@ -85,6 +88,7 @@ int focusVal;
 int  redGain ;
 int  blueGain;
 int  key;
+int trigger;    // external trigger
 }GLOBAL_VAL;
 typedef struct {
     CAMERA_INSTANCE camera_instance;
@@ -99,7 +103,6 @@ static struct
    {"jpg", IMAGE_ENCODING_JPEG},
    {"bmp", IMAGE_ENCODING_BMP},
    {"png", IMAGE_ENCODING_PNG},
-   {"raw", IMAGE_ENCODING_RAW_BAYER},
 };
 static int encoding_xref_size = sizeof(encoding_xref) / sizeof(encoding_xref[0]);
 
@@ -115,6 +118,36 @@ time_t begin = 0;
 GLOBAL_VAL globalParam; 
 pthread_t processCmd_pt;
 _Bool isrunning  = 1;
+
+char* itoa(int num,char* str,int radix)
+{
+    char index[]="0123456789ABCDEF";
+    unsigned unum;
+    int i=0,j,k;
+    if(radix==10&&num<0)
+    {
+        unum=(unsigned)-num;
+        str[i++]='-';
+    }
+    else unum=(unsigned)num;
+    do{
+        str[i++]=index[unum%(unsigned)radix];
+        unum/=radix;
+       }while(unum);
+    str[i]='\0';
+    if(str[0]=='-')
+        k=1;
+    else
+        k=0;
+     
+    for(j=k;j<=(i-1)/2;j++)
+    {       char temp;
+        temp=str[j];
+        str[j]=str[i-1+k-j];
+        str[i-1+k-j]=temp;
+    }
+    return str;
+}
 
 int resetGlobalParameter(CAMERA_INSTANCE camera_instance, GLOBAL_VAL* globalParam){
     if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
@@ -182,6 +215,16 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
                 }
              }
          }
+         if(keyVal == 111){
+            static int k = 0;
+            char str[8];
+            k++;
+            itoa(k, str, 10);
+            strcat(str, ".jpg");
+             save_image(camera_instance, str, \
+                  IMAGE_ENCODING_JPEG, 80);
+            printf("Image save OK\r\n");
+         }
           if(keyVal == 119){
              globalParam->key = W;// W
              globalParam->redGain += rgainStep; 
@@ -194,9 +237,21 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
              globalParam->key = A;// A
              globalParam->blueGain += bgainStep; 
           }
-           if(keyVal == 100){
+            if(keyVal == 100){
              globalParam->key = D;// D
              globalParam->blueGain -= bgainStep; 
+          }
+            if(keyVal == 116){  //T
+             globalParam->key = T;// T
+             globalParam->trigger = 1; 
+             //Enter external trigger mode 
+             arducam_set_control(camera_instance, V4L2_CID_ARDUCAM_EXT_TRI,globalParam->trigger);
+          }
+           if(keyVal == 99){  //C
+             globalParam->key = C;// C
+             globalParam->trigger = 0; 
+             //Exit external trigger mode 
+             arducam_set_control(camera_instance, V4L2_CID_ARDUCAM_EXT_TRI,globalParam->trigger);
           }
          if(!isrunning){
              LOG("Please click 'Ctrl'+'C' to exit!");
@@ -221,7 +276,7 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
             arducam_manual_set_awb_compensation(globalParam->redGain,globalParam->blueGain);
             break;
          }
-         //LOG("Keyval:%d",keyVal);
+         LOG("Keyval:%d",keyVal);
     }
    
    // return 0;
@@ -229,7 +284,7 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
 int raw_callback(BUFFER *buffer) {
        globalParam.frameCnt++;
          if(time(NULL) - begin >= 1){
-             printf("\r[Framerate]: %02d fps, [Exposure]: %04d, [Focus]: %04d,[Rgain]: %04d, [Bgain]: %04d", 
+             printf("\r[Framerate]: %02d pfs, [Exposure]: %04d, [Focus]: %04d,[Rgain]: %04d, [Bgain]: %04d", 
                     globalParam.frameCnt,globalParam.exposureVal,globalParam.focusVal,\
                     globalParam.redGain, globalParam.blueGain);
              fflush(stdout); 

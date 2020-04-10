@@ -74,6 +74,11 @@ extern "C" {
 #define MMAL_BUFFER_HEADER_FLAG_NAL_END (1 << 12)
 /* @} */
 
+#define V4L2_CTRL_CLASS_USER	0x00980000
+#define V4L2_CID_BASE			(V4L2_CTRL_CLASS_USER | 0x900)
+#define V4L2_CID_ARDUCAM_BASE     (V4L2_CID_BASE + 0x1000)
+#define V4L2_CID_ARDUCAM_EXT_TRI            (V4L2_CID_ARDUCAM_BASE + 1)
+
 typedef struct {
     uint32_t encoding;
     int quality; // JPEG quality setting (1-100)
@@ -214,6 +219,17 @@ int arducam_set_resolution(CAMERA_INSTANCE camera_instance, int *width, int *hei
  * @return error code , 0 success, !0 error.
  */
 int arducam_set_mode(CAMERA_INSTANCE camera_instance, int mode);
+/**
+ * @brief Set sensor mode.
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param mode Mode index.(You can use the list_format program to view the supported modes.)
+ * @param lens_table_path used to choose the lens shading fix table 
+ * @return error code , 0 success, !0 error.
+ */
+
+int arducam_set_mode_fix_lens(CAMERA_INSTANCE camera_instance, int mode);
+
 
 /**
  * @brief Get the current format.
@@ -338,6 +354,16 @@ void arducam_release_buffer(BUFFER *buffer);
  * */
 int arducam_start_preview(CAMERA_INSTANCE camera_instance, PREVIEW_PARAMS *preview_params);
 
+
+/**
+ * Turn on image preview
+ * 
+ * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
+ * @param preview_params Preview parameter,Use default parameters if NULL.
+ * @param lens_table_path choose the table path
+ * @return error code , 0 success, !0 error.
+ * */
+int arducam_start_preview_fix_lens(CAMERA_INSTANCE camera_instance, PREVIEW_PARAMS *preview_params, char *lens_table_path);
 /**
  * Turn off image preview
  * 

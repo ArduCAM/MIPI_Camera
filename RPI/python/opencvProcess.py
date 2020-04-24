@@ -100,16 +100,6 @@ if __name__ == '__main__':
                 image[:, byte::5] |= ((image[:, 4::5] >> ((4 - byte) * 2)) & 0b11)
             #delete the unused pix
             rawImageData = np.delete(image,np.s_[4::5], 1)
-
-            '''
-            Show original image 
-            '''
-            #image1 = cv.cvtColor(rawImageData, 46)
-            #image1 = image1 >>2
-            #image1 = image1.astype(np.uint8)
-            #image1 = cv.resize(image1,(160,120))
-            #cv.imshow("original stream",image1)
-
             '''
             Fix lensShasing 
             '''
@@ -118,18 +108,17 @@ if __name__ == '__main__':
             rawImageData[1::2, 0::2] = rawImageData[1::2, 0::2]*g2mask/2
             rawImageData[0::2, 0::2] = rawImageData[0::2, 0::2]*bmask/2
             rawImageData = np.clip(rawImageData,0,1023)
-            #image2 = cv.cvtColor(rawImageData, 46)
-            #image2 = image2 >>2
-            #image2 = image2.astype(np.uint8)
-            #image2 = cv.resize(image2,(640,480))
-            #cv.imshow("fixed stream",image2)
+          
+            '''
+            Fix AWB
+            '''
             awbImg = cv.cvtColor(rawImageData, 46)>>2
             awbImg = awbImg.astype(np.uint8)
             r, g, b = cv.split(awbImg)
             r_avg = cv.mean(r)[0]
             g_avg = cv.mean(g)[0]
             b_avg = cv.mean(b)[0]
-            # 求各个通道所占增益
+    
             k = (r_avg + g_avg + b_avg) / 3
             kr = k / r_avg
             kg = k / g_avg
@@ -141,7 +130,6 @@ if __name__ == '__main__':
             b = cv.addWeighted(src1=b, alpha=kb, src2=0, beta=0, gamma=0)
             b= np.clip(g,0,255)
             balance_img = cv.merge([b, g, r])
-            #balance_img = np.clip(balance_img,0,250)
             balance_img = cv.resize(balance_img,(640,480))
             cv.imshow("awb stream",balance_img)
             print(time.time() - start)

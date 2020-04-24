@@ -1,5 +1,14 @@
 #coding=utf-8
 #-*- coding:utf-8 -*-
+
+'''
+        Step1: Read the original image data from ./originalImage/1160x800.raw"
+        Step2: Create lens shading table using gaussian_pyramid function
+        Step3: Open the camera   
+        Step4: process lens shading using the tabel we create
+        Step5: fix awb
+        step6: show the image processed. 
+'''
 import arducam_mipicamera as arducam
 import cv2 as cv
 import numpy as np 
@@ -131,6 +140,9 @@ if __name__ == '__main__':
             b= np.clip(g,0,255)
             balance_img = cv.merge([b, g, r])
             balance_img = cv.resize(balance_img,(640,480))
+            '''
+            Show the image processed.
+            '''
             cv.imshow("awb stream",balance_img)
             print(time.time() - start)
         # Release memory

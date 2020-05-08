@@ -311,7 +311,7 @@ class buffer(object):
 
 def check_status(status,func_name):
     if status != 0:
-        raise RuntimeError("{}: Unexpected result {}.".format(func_name, status))
+        raise RuntimeError("{}: Unexpected result.".format(func_name))
 
 class mipi_camera(object):
     
@@ -508,12 +508,12 @@ pass
 def unpack_raw10_to_raw8(buff, width, height):
     if not isinstance(buff, POINTER(BUFFER)):
         raise TypeError("Expected parameter type is POINTER(BUFFER).")
-    return buffer(arducam_unpack_raw10_to_raw8(buffer[0].data, width, height))
+    return buffer(arducam_unpack_raw10_to_raw8(buff[0].data, width, height))
 
 def unpack_raw10_to_raw16(buff, width, height):
     if not isinstance(buff, POINTER(BUFFER)):
         raise TypeError("Expected parameter type is POINTER(BUFFER).")
-    return buffer(arducam_unpack_raw10_to_raw16(buffer[0].data, width, height))
+    return buffer(arducam_unpack_raw10_to_raw16(buff[0].data, width, height))
 
 def unpack_mipi_raw10(byte_buf):
     data = np.frombuffer(byte_buf, dtype=np.uint8)

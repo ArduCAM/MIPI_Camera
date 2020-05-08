@@ -278,6 +278,10 @@ The arducam_mipicamera.py script is a wrapper for the libarducam_mipicamera.so d
 To use this script you need to pre-install libarducam_mipicamera.so.
 All python examples are in the Python Folder.
 
+
+# capture_raw10_opencv.py demo 
+This demo used to get raw10 image. Then unpack it to raw16. Display it using openCV  
+
 ## Dependency
 `sudo pip install v4l2`
 

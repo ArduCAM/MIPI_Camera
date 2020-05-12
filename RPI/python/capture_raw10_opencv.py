@@ -29,9 +29,11 @@ if __name__ == "__main__":
         camera = arducam.mipi_camera()
         print("Open camera...")
         camera.init_camera()
-        print("Setting the resolution...")
-        fmt = camera.set_resolution(1920, 1080)
-        print("Current resolution is {}".format(fmt))
+        camera.set_mode(6) # chose a camera mode which yields raw10 pixel format, see output of list_format utility
+        fmt = camera.get_format()
+        width = fmt.get("width")
+        height = fmt.get("height")
+        print("Current resolution is {w}x{h}".format(w=width, h=height))
         # print("Start preview...")
         # camera.start_preview(fullscreen = False, window = (0, 0, 1280, 720))
         set_controls(camera)
@@ -40,9 +42,9 @@ if __name__ == "__main__":
             frame = camera.capture(encoding = 'raw')
             #height = fmt[1]
             #width  = fmt[0]
-            frame = arducam.remove_padding(frame.data, fmt[0], fmt[1], 10)
+            frame = arducam.remove_padding(frame.data, width, height, 10)
             frame = arducam.unpack_mipi_raw10(frame)
-            frame = frame.reshape(fmt[1], fmt[0]) << 6
+            frame = frame.reshape(height, width) << 6
             image = frame
             #image = cv2.cvtColor(frame, cv2.COLOR_YUV2BGR_I420)
             cv2.imshow("Arducam", image)

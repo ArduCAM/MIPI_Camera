@@ -277,7 +277,7 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
             arducam_manual_set_awb_compensation(globalParam->redGain,globalParam->blueGain);
             break;
          }
-         LOG("Keyval:%d",keyVal);
+         //LOG("Keyval:%d",keyVal);
     }
    
    // return 0;

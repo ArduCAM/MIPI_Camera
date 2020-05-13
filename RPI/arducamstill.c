@@ -8,6 +8,7 @@
 #include <termios.h>
 #include <pthread.h>
 #include <stdlib.h>
+#include <signal.h>
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 #define SET_CONTROL 0
 #ifndef vcos_assert
@@ -118,7 +119,7 @@ time_t begin = 0;
 GLOBAL_VAL globalParam; 
 pthread_t processCmd_pt;
 _Bool isrunning  = 1;
-
+PROCESS_STRUCT  processData;
 char* itoa(int num,char* str,int radix)
 {
     char index[]="0123456789ABCDEF";
@@ -356,10 +357,30 @@ void prcessCmd(PROCESS_STRUCT *processData){
    
     pthread_join(processCmd_pt,NULL);  // wait thread finish
 }
+
+void my_handler(int s){
+    LOG("\r\nClose camera...\r\n");
+    if(processData.camera_instance != NULL ){
+        int res = arducam_close_camera(processData.camera_instance);
+        if (res) {
+            LOG("close camera status = %d\n", res);
+        }
+    }
+    
+           exit(1); 
+}
+
 int main(int argc, char **argv) {
   CAMERA_INSTANCE camera_instance;
   RASPISTILL_STATE state;
-  PROCESS_STRUCT  processData;
+  struct sigaction sigIntHandler;
+ 
+   sigIntHandler.sa_handler = my_handler;
+   sigemptyset(&sigIntHandler.sa_mask);
+   sigIntHandler.sa_flags = 0;
+ 
+   sigaction(SIGINT, &sigIntHandler, NULL);
+
    default_status(&state);
     LOG("Open camera...");
     int res = arducam_init_camera(&camera_instance);

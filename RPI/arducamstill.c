@@ -358,28 +358,25 @@ void prcessCmd(PROCESS_STRUCT *processData){
     pthread_join(processCmd_pt,NULL);  // wait thread finish
 }
 
-void my_handler(int s){
-    LOG("\r\nClose camera...\r\n");
-    if(processData.camera_instance != NULL ){
-        int res = arducam_close_camera(processData.camera_instance);
-        if (res) {
-            LOG("close camera status = %d\n", res);
-        }
-    }
-    
-           exit(1); 
-}
+//void my_handler(int s){
+//    LOG("\r\nClose camera...\r\n");
+//    if(processData.camera_instance != NULL ){
+//        int res = arducam_close_camera(processData.camera_instance);
+//        if (res) {
+//            LOG("close camera status = %d\n", res);
+//        }
+//    }
+//    exit(1); 
+//}
 
 int main(int argc, char **argv) {
   CAMERA_INSTANCE camera_instance;
   RASPISTILL_STATE state;
-  struct sigaction sigIntHandler;
- 
-   sigIntHandler.sa_handler = my_handler;
-   sigemptyset(&sigIntHandler.sa_mask);
-   sigIntHandler.sa_flags = 0;
- 
-   sigaction(SIGINT, &sigIntHandler, NULL);
+  //struct sigaction sigIntHandler;
+  //sigIntHandler.sa_handler = my_handler;
+  //sigemptyset(&sigIntHandler.sa_mask);
+  //sigIntHandler.sa_flags = 0;
+  //sigaction(SIGINT, &sigIntHandler, NULL);
 
    default_status(&state);
     LOG("Open camera...");

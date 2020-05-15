@@ -219,17 +219,15 @@ int arducam_set_resolution(CAMERA_INSTANCE camera_instance, int *width, int *hei
  * @return error code , 0 success, !0 error.
  */
 int arducam_set_mode(CAMERA_INSTANCE camera_instance, int mode);
+
 /**
- * @brief Set sensor mode.
+ * @brief Set lens table path.
  * 
  * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
- * @param mode Mode index.(You can use the list_format program to view the supported modes.)
- * @param lens_table_path used to choose the lens shading fix table 
+ * @param lens_table_path  the lens table path you choose
  * @return error code , 0 success, !0 error.
  */
-
-int arducam_set_mode_fix_lens(CAMERA_INSTANCE camera_instance, int mode);
-
+int arducam_set_lens_table(CAMERA_INSTANCE camera_instance, char* lens_table_path);
 
 /**
  * @brief Get the current format.
@@ -237,6 +235,10 @@ int arducam_set_mode_fix_lens(CAMERA_INSTANCE camera_instance, int mode);
  * @param camera_instance Type CAMERA_INSTANCE, Obtained from arducam_init_camera function.
  * @param fmt Pointer of type struct format, used to store format information.
  * @return ierror code , 0 success, !0 error.
+ *  @code
+ *      char *path = "./lens_shading_table/ar1820/ls_table_1920x1080.h"
+ *      res = arducam_set_lens_table(camera_instance, path);
+ * @endcode
  */
 int arducam_get_format(CAMERA_INSTANCE camera_instance, struct format *fmt);
 

@@ -385,8 +385,14 @@ int main(int argc, char **argv) {
         LOG("init camera status = %d", res);
         return -1;
     }
+    //char *path = "./lens_shading_table/ar1820/ls_table_1920x1080.h";
+     char *path = NULL;
+    res = arducam_set_lens_table(camera_instance, NULL);
+    if (res) {
+        LOG("set_lens_table NULL, use default.",  res);
+    }
     printSupportFormat(camera_instance);
-
+     
     if (arducam_parse_cmdline(argc, argv, &state))
     {
      return 0;

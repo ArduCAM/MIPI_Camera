@@ -25,6 +25,8 @@ def set_controls(camera):
         time.sleep(2)
         print("Enable Auto White Balance...")
         camera.software_auto_white_balance(enable = True)
+        print("manual set awb compensation...")
+        camera.manual_set_awb_compensation(100,100)
     except Exception as e:
         print(e)
         print("The camera may not support this control.")

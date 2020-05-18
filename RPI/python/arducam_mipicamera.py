@@ -2,7 +2,6 @@
 This script is a wrapper for the libarducam_mipicamera.so dynamic library. 
 To use this script you need to pre-install libarducam_mipicamera.so
 '''
-from __future__ import division
 from ctypes import *
 import numpy as np
 import sys
@@ -249,6 +248,9 @@ arducam_unpack_raw10_to_raw16 = camera_lib.arducam_unpack_raw10_to_raw16
 arducam_unpack_raw10_to_raw16.argtypes = [POINTER(c_ubyte), c_int, c_int]
 arducam_unpack_raw10_to_raw16.restype = POINTER(BUFFER)
 
+arducam_manual_set_awb_compensation = camera_lib.arducam_manual_set_awb_compensation
+arducam_manual_set_awb_compensation.argtypes = [c_int,c_int]
+arducam_manual_set_awb_compensation.restype = None
 def align_down(size, align):
     return (size & ~((align)-1))
 
@@ -483,6 +485,10 @@ class mipi_camera(object):
             arducam_software_auto_white_balance(self.camera_instance, int(enable)),
             sys._getframe().f_code.co_name
         )
+    def manual_set_awb_compensation(self,rGain, bGain):
+         arducam_manual_set_awb_compensation(rGain,bGain)
+
+    
 
     def read_sensor_reg(self, address):
         _value = c_uint16(0)
@@ -531,7 +537,7 @@ def unpack_mipi_raw10(byte_buf):
 
 def remove_padding(data, width, height, bit_width):
     buff = np.frombuffer(data, np.uint8)
-    real_width = width // 8 * bit_width
+    real_width = width / 8 * bit_width
     align_width = align_up(real_width, 32)
     align_height = align_up(height, 16)
     

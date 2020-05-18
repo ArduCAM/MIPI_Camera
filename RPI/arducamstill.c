@@ -140,7 +140,6 @@ char* itoa(int num,char* str,int radix)
         k=1;
     else
         k=0;
-     
     for(j=k;j<=(i-1)/2;j++)
     {       char temp;
         temp=str[j];
@@ -149,7 +148,6 @@ char* itoa(int num,char* str,int radix)
     }
     return str;
 }
-
 int resetGlobalParameter(CAMERA_INSTANCE camera_instance, GLOBAL_VAL* globalParam){
     if (arducam_reset_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE)) {
         LOG("Failed to set focus, the camera may not support this control.");
@@ -408,6 +406,12 @@ int main(int argc, char **argv) {
     }
     if (arducam_set_control(camera_instance, V4L2_CID_EXPOSURE,globalParam.exposureVal)) {
         LOG("Failed to set exposure, the camera may not support this control.");
+    }
+    if (arducam_set_control(camera_instance, V4L2_CID_HFLIP,1)) {
+        LOG("Failed to set hflip, thse camera may not support this control.");
+    }
+    if (arducam_set_control(camera_instance, V4L2_CID_VFLIP,1)) {
+        LOG("Failed to set vflip, the camera may not support this control.");
     }
     arducam_manual_set_awb_compensation(globalParam.redGain,globalParam.blueGain);      
     LOG("Start preview...");

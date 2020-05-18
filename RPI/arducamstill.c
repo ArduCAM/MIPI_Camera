@@ -408,10 +408,7 @@ int main(int argc, char **argv) {
         LOG("Failed to set exposure, the camera may not support this control.");
     }
     if (arducam_set_control(camera_instance, V4L2_CID_HFLIP,1)) {
-        LOG("Failed to set hflip, thse camera may not support this control.");
-    }
-    if (arducam_set_control(camera_instance, V4L2_CID_VFLIP,1)) {
-        LOG("Failed to set vflip, the camera may not support this control.");
+        LOG("Failed to set exposure, the camera may not support this control.");
     }
     arducam_manual_set_awb_compensation(globalParam.redGain,globalParam.blueGain);      
     LOG("Start preview...");

@@ -7,7 +7,11 @@
 
 import cv2
 import time
-from  Queue import  Queue
+try:
+    from  Queue import  Queue
+except ModuleNotFoundError:
+    from  queue import  Queue
+
 import  threading
 import signal
 import sys

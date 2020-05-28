@@ -40,6 +40,18 @@ pi@raspberrypi:~ $ cd MIPI_Camera/RPI/
 pi@raspberrypi:~/MIPI_Camera/RPI $ make install 
 ```
 ![IMAGE ALT TEXT](images/3.png)
+
+For Pi4 platform 
+```bash
+cd /tmp
+```
+```bash
+wget https://project-downloads.drogon.net/wiringpi-latest.deb
+```
+```bash
+sudo dpkg -i wiringpi-latest.deb
+```
+
 ```bash
 pi@raspberrypi:~/MIPI_Camera/RPI $ chmod +x enable_i2c_vc.sh 
 ```

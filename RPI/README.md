@@ -41,6 +41,13 @@ pi@raspberrypi:~/MIPI_Camera/RPI $ make install
 ```
 ![IMAGE ALT TEXT](images/3.png)
 
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ chmod +x enable_i2c_vc.sh 
+```
+```bash
+pi@raspberrypi:~/MIPI_Camera/RPI $ ./enable_i2c_vc.sh
+```
+[Notice]
 For Pi4 platform 
 ```bash
 cd /tmp
@@ -52,12 +59,6 @@ wget https://project-downloads.drogon.net/wiringpi-latest.deb
 sudo dpkg -i wiringpi-latest.deb
 ```
 
-```bash
-pi@raspberrypi:~/MIPI_Camera/RPI $ chmod +x enable_i2c_vc.sh 
-```
-```bash
-pi@raspberrypi:~/MIPI_Camera/RPI $ ./enable_i2c_vc.sh
-```
 ![IMAGE ALT TEXT](images/4.png)
 Then click Y/y to reboot now
 

@@ -115,6 +115,16 @@ pi@raspberrypi:~/MIPI_Camera/RPI $ ./arducamstill -t 5000 -m 1 -e jpg -o test.jp
 ```bash
 https://github.com/ArduCAM/MIPI_Camera/blob/master/RPI/arducam_mipicamera.h
 ```
+### ISP demo
+-  Arducam release ISP demo depend on opencv 
+```bash 
+cd /MIPI_Camera/RPI/ISP 
+```
+```bash 
+ python preview.py 
+```
+![IMAGE ALT TEXT](images/20.png)
+
 ### opencvGui
 For the convenience of users to see the effect of fine-tuning intuitively, arduacm 
 release a GUI application
@@ -294,6 +304,8 @@ All python examples are in the Python Folder.
 
 # capture_raw10_opencv.py demo 
 This demo used to get raw10 image. Then unpack it to raw16. Display it using openCV  
+
+
 
 ## Dependency
 `sudo pip install v4l2`

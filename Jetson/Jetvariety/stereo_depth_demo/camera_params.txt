@@ -1,0 +1,6 @@
+{
+    "device":0,
+    "height":600.0,
+    "scale":0.8,
+    "width":1600.0
+}

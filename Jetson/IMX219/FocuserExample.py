@@ -100,7 +100,7 @@ def parse_cmdline():
     parser = argparse.ArgumentParser(description='Arducam Controller.')
 
     parser.add_argument('-i', '--i2c-bus', type=int, nargs=None, required=True,
-                        help='Set i2c bus, for A02 is 6, for B01 is 7 or 8.')
+                        help='Set i2c bus, for A02 is 6, for B01 is 7 or 8, for Jetson Xavier NX it is 9 and 10.')
 
     return parser.parse_args()
 

@@ -20,6 +20,11 @@ def display(cap, arducam_utils):
         ret, frame = cap.read()
         counter += 1
 
+        if arducam_utils.convert2rgb == 0:
+            w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+            h = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            frame = frame.reshape(int(h), int(w))
+
         frame = arducam_utils.convert(frame)
         
         frame = resize(frame, 1280.0)
@@ -51,13 +56,13 @@ def pixelformat(string):
 def show_info(arducam_utils):
     _, firmware_version = arducam_utils.read_dev(ArducamUtils.FIRMWARE_VERSION_REG)
     _, sensor_id = arducam_utils.read_dev(ArducamUtils.FIRMWARE_SENSOR_ID_REG)
-    _, serial_number = arducam_utils.read_dev(ArducamUtils.SERIAL_NUMBER)
+    _, serial_number = arducam_utils.read_dev(ArducamUtils.SERIAL_NUMBER_REG)
     print("Firmware Version: {}".format(firmware_version))
     print("Sensor ID: 0x{:04X}".format(sensor_id))
     print("Serial Number: 0x{:08X}".format(serial_number))
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Arducam Jetson Nano MIPI Camera Displayer.')
+    parser = argparse.ArgumentParser(description='Arducam Jetson Nano MIPI Camera Sensor.')
 
     parser.add_argument('-d', '--device', default=0, type=int, nargs='?',
                         help='/dev/videoX default is 0')

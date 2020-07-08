@@ -62,7 +62,7 @@ def show_info(arducam_utils):
     print("Serial Number: 0x{:08X}".format(serial_number))
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Arducam Jetson Nano MIPI Camera Sensor.')
+    parser = argparse.ArgumentParser(description='Arducam Jetson Nano MIPI Camera Displayer.')
 
     parser.add_argument('-d', '--device', default=0, type=int, nargs='?',
                         help='/dev/videoX default is 0')

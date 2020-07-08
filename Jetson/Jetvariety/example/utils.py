@@ -119,7 +119,7 @@ class ArducamUtils(object):
     DEVICE_ID = 0x0030
 
     def __init__(self, device_num):
-        self.vd = open('/dev/video{}'.format(device_num), 'rw')
+        self.vd = open('/dev/video{}'.format(device_num), 'w')
         self.refresh()
 
     def refresh(self):

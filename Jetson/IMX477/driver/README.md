@@ -6,6 +6,10 @@ IMX477 driver code provided by [NVIDIA-Jetson-IMX477-RPIV3](https://github.com/R
 
 `sudo dpkg -i xxx.deb`
 
+### Notice
+
+Please remove Jetvariety board, connect IMX477 directly to Jetson Nano.  
+
 
 #
 

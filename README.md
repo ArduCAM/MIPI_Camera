@@ -10,10 +10,10 @@ MIPI camera driver is a close source userland camera driver with no kernel verio
 * ## Jetvariety for Jetson Nano/Xavier NX
 Jetvariety is a Nvidia Jetson platorms V4L2 kernel camera driver framework which can support any MIPI cameras Arducam provides.
 A single camera driver for all is the main goal of Jetvariety project, user doesn't need to develop their own camera driver for Nvidia Jetson boards and 
-even more user can switch between different Arducam cameras without switching camera driver. Software compatibility for Jetvariety V4L2 driver is also another consideration for this project.
+even more user can switch between different Arducam cameras without switching camera driver. Software compatibility for Jetvariety V4L2 driver is also another consideration for this project. [Arducam_OBISP_MIPI_Camera_Module](https://github.com/ArduCAM/Arducam_OBISP_MIPI_Camera_Module) uses this driver on Jetson.
 
 * ## Pivariety for Raspberry Pi
-Similar to the Jetvariety, Pivariety uses the same idea to provide a single camera driver for all on the Raspberry pi platforms. It is also a V4L2 kernel driver for the software compatibility to most of the popular media player software or OpenCV.  
+Similar to the Jetvariety, Pivariety uses the same idea to provide a single camera driver for all on the Raspberry pi platforms. It is also a V4L2 kernel driver for the software compatibility to most of the popular media player software or OpenCV. [Arducam_OBISP_MIPI_Camera_Module](https://github.com/ArduCAM/Arducam_OBISP_MIPI_Camera_Module) also uses this driver on Raspberry Pi. 
 
 * ## Libcamera-arducam for Raspberry Pi
 Coming soon.

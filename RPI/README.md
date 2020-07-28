@@ -346,7 +346,8 @@ Run the script camera_i2c from utils folder and send output message to support@a
 `sudo chmod +x camera_i2c rpi3-gpiovirtbuf`  
 
 `./camera_i2c`
-
+![IMAGE ALT TEXT](images/debug.png)
+## GPU memory is too small
 ![IMAGE ALT TEXT](images/18.png)
 You should set the gpu_mem to bigger. Open the config.txt file. Then reboot
 ![IMAGE ALT TEXT](images/19.png)

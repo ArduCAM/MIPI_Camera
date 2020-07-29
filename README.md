@@ -5,7 +5,7 @@ Arducam team developed several camera drivers and demo code based on different d
 
 # Driver Framework
 * ## MIPI Camera Driver for Raspberry Pi
-MIPI camera driver is a close source userland camera driver with no kernel verion dependency. It can connect any MIPI camera modules from Arducam. Since this driver only supports the RAW sensor, it can receive the RAW images without hardware ISP processing, users have to do software ISP in their own implementation.
+MIPI camera driver is a close source userland camera driver with no kernel version dependency. It can connect any MIPI camera modules from Arducam. Since this driver only supports the RAW sensor, it can receive the RAW images without hardware ISP processing, users have to do software ISP in their own implementation.
 
 * ## Jetvariety for Jetson Nano/Xavier NX
 Jetvariety is a Nvidia Jetson platorms V4L2 kernel camera driver framework which can support any MIPI cameras Arducam provides.

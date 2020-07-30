@@ -537,7 +537,7 @@ def unpack_mipi_raw10(byte_buf):
 
 def remove_padding(data, width, height, bit_width):
     buff = np.frombuffer(data, np.uint8)
-    real_width = width / 8 * bit_width
+    real_width = width // 8 * bit_width
     align_width = align_up(real_width, 32)
     align_height = align_up(height, 16)
     

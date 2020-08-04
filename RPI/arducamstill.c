@@ -103,6 +103,7 @@ static struct
    {"jpg", IMAGE_ENCODING_JPEG},
    {"bmp", IMAGE_ENCODING_BMP},
    {"png", IMAGE_ENCODING_PNG},
+   {"raw", IMAGE_ENCODING_RAW_BAYER},
 };
 static int encoding_xref_size = sizeof(encoding_xref) / sizeof(encoding_xref[0]);
 
@@ -360,6 +361,8 @@ int main(int argc, char **argv) {
   CAMERA_INSTANCE camera_instance;
   RASPISTILL_STATE state;
   PROCESS_STRUCT  processData;
+  char path = NULL;//"./lens_shading_table/imx230/2672x2004.h";
+  arducam_set_lens_table(camera_instance,path );
    default_status(&state);
     LOG("Open camera...");
     int res = arducam_init_camera(&camera_instance);
@@ -378,6 +381,7 @@ int main(int argc, char **argv) {
         LOG("set resolution status = %d", res);
         return -1;
     } 
+
     resetGlobalParameter(camera_instance, &globalParam);
     if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE,globalParam.focusVal)) {
         LOG("Failed to set focus, the camera may not support this control.");
@@ -573,13 +577,13 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
             case  CommandCapture:
             {
                 int len = strlen(argv[i+1]);
-                printf("len = %d\r\n",len);
+               // printf("len = %d\r\n",len);
                 if(len){
                     state->linkname = malloc(len + 10);
                     if (state->linkname)
                     strncpy(state->linkname, argv[i + 1], len+1);
                     i++;
-                     printf("name= %s\r\n",state->linkname);
+                   //  printf("name= %s\r\n",state->linkname);
                 }else{
                     valid = 0;
                     break;

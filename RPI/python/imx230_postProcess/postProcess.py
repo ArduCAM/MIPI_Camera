@@ -37,7 +37,7 @@ def choose_lens_table(i):
 if __name__ == '__main__':
     camera = arducam.mipi_camera()
     print("Open camera...")
-    mode =3
+    mode =1
     camera.init_camera()
     camera.set_mode(mode) # chose a camera mode which yields raw10 pixel format, see output of list_format utility
     fmt = camera.get_format()

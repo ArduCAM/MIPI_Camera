@@ -12,7 +12,7 @@
 - Step 3: Change resolution if not, use the default
 ![IMAGE ALT TEXT](data/1.png)
 
-- Step 3:Run the postProcess.py
+- Step 4: Run the postProcess.py
 ```Bash
     python3 postProcess.py
 ```

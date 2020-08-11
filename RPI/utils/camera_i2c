@@ -3,7 +3,7 @@
 
 # Copyright (c) 2017, Raspberry Pi (Trading) Ltd
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright
@@ -14,7 +14,7 @@
 #     * Neither the name of the copyright holder nor the
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -117,7 +117,7 @@ gpio -g mode 2 out
 gpio -g write 2 1
 ;;
 
-'a02082'|'a22082'|'a020d3'|'9020e0'|'a03111'|'b03111'|'c03111')
+'a02082'|'a22082'|'a020d3'|'9020e0'|'a03111'|'b03111'|'c03111'|'c03112')
 echo "Raspberry Pi3B / Pi3B+ / 3A / 4B(1G/2G/4G)"
 # https://www.raspberrypi.org/forums/viewtopic.php?f=38&t=120702&start=100
 # Pins 44&45 Alt1=i2c0, alt2=i2c1

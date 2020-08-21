@@ -7,7 +7,7 @@ CXXFLAGS?= -I. -g -std=gnu++11 `pkg-config --cflags --libs opencv`
 LDFLAGS	?=
 LIBS	:= -larducam_mipicamera -lpthread #-lwiringPi
 OLIB	:= lib
-examples:= video4cameras arducamstill capture video list_format capture_raw raw_callback yuv_callback read_write_sensor_reg ov9281_external_trigger 2MPGlobalShuterDemo preview-camera0 preview-dualcam capture-dualcam video2stdout capture2opencv opencvGui qrcode_detection multi_adapter_board_uc444  
+examples:= video4cameras arducamstill capture video list_format capture_raw raw_callback yuv_callback read_write_sensor_reg ov9281_external_trigger 2MPGlobalShuterDemo preview-camera0 preview-dualcam capture-dualcam video2stdout capture2opencv opencvGui qrcode_detection
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -41,9 +41,6 @@ video2stdout : video2stdout.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
 
 capture2opencv : capture2opencv.cpp
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
-	
-multi_adapter_board_uc444 : multi_adapter_board_uc444.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 opencvGui : opencvGui.cpp

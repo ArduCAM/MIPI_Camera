@@ -6,6 +6,7 @@ import fcntl
 import os
 import argparse
 from utils import ArducamUtils
+import time
 
 def resize(frame, dst_width):
     width = frame.shape[1]
@@ -13,12 +14,15 @@ def resize(frame, dst_width):
     scale = dst_width * 1.0 / width
     return cv2.resize(frame, (int(scale * width), int(scale * height)))
 
-def display(cap, arducam_utils):
+def display(cap, arducam_utils, fps = False):
     counter = 0
     start_time = datetime.now()
+    frame_count = 0
+    start = time.time()
     while True:
         ret, frame = cap.read()
         counter += 1
+        frame_count += 1
 
         if arducam_utils.convert2rgb == 0:
             w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -34,6 +38,12 @@ def display(cap, arducam_utils):
         # press 'q' to exit.
         if ret == ord('q'):
             break
+
+        if fps and time.time() - start >= 1:
+            print("fps: {}".format(frame_count),end='\r')
+            start = time.time()
+            frame_count = 0 
+
     end_time = datetime.now()
     elapsed_time = end_time - start_time
     avgtime = elapsed_time.total_seconds() / counter
@@ -72,6 +82,7 @@ if __name__ == "__main__":
                         help="set width of image")
     parser.add_argument('--height', type=lambda x: int(x,0),
                         help="set height of image")
+    parser.add_argument('--fps', action='store_true', help="display fps")
 
     args = parser.parse_args()
 
@@ -97,7 +108,7 @@ if __name__ == "__main__":
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, args.height)
 
     # begin display
-    display(cap, arducam_utils)
+    display(cap, arducam_utils, args.fps)
 
     # release camera
     cap.release()

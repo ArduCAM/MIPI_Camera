@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
 void QRCodeDecode(ImageScanner &scanner, cv::Mat &frame)
 {
 	cv::Mat grey;
-	cv::cvtColor(frame, grey, CV_BGR2GRAY);
+	cv::cvtColor(frame, grey, cv::COLOR_BGR2GRAY);
 
 	int width = frame.cols;
 	int height = frame.rows;

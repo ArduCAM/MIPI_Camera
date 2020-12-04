@@ -3,10 +3,16 @@ CROSS_PREFIX	?=
 CC		:= $(CROSS_COMPILE)gcc
 CXX		:= $(CROSS_COMPILE)g++
 CFLAGS 	?= -I. -g -O0 -std=gnu11
-CXXFLAGS?= -I. -g -std=gnu++11 `pkg-config --cflags --libs opencv`
+
+OPENCV_LIB = $(shell pkg-config --cflags --libs opencv)
+ifeq ($(OPENCV_LIB), )
+OPENCV_LIB = $(shell pkg-config --cflags --libs opencv4)
+endif
+
+CXXFLAGS?= -I. -g -std=gnu++11 ${OPENCV_LIB}
 LDFLAGS	?=
 LIBS	:= -larducam_mipicamera -lpthread #-lwiringPi
-OLIB	:= lib
+OLIB	:= lib 
 examples:= video4cameras arducamstill capture video list_format capture_raw raw_callback yuv_callback read_write_sensor_reg ov9281_external_trigger 2MPGlobalShuterDemo preview-camera0 preview-dualcam capture-dualcam video2stdout capture2opencv opencvGui qrcode_detection
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<

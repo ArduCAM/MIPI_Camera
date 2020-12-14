@@ -12,7 +12,7 @@ endif
 CXXFLAGS?= -I. -g -std=gnu++11 ${OPENCV_LIB}
 LDFLAGS	?=
 LIBS	:= -larducam_mipicamera -lpthread #-lwiringPi
-OLIB	:= lib 
+OLIB	:= lib
 examples:= video4cameras arducamstill capture video list_format capture_raw raw_callback yuv_callback read_write_sensor_reg ov9281_external_trigger 2MPGlobalShuterDemo preview-camera0 preview-dualcam capture-dualcam video2stdout capture2opencv opencvGui qrcode_detection
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<

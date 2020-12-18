@@ -8,6 +8,7 @@
 #include <termios.h>
 #include <pthread.h>
 #include <stdlib.h>
+#include <signal.h>
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 #define SET_CONTROL 0
 #ifndef vcos_assert
@@ -415,7 +416,7 @@ int main(int argc, char **argv) {
       return 1;
   }
   while(1){
-      processKeyboardEvent(camera_instance,&globalParam);
+  //    processKeyboardEvent(camera_instance,&globalParam);
   }  
 }
 

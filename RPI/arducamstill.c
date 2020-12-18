@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <unistd.h>
+#include <fcntl.h>
 #define LOG(fmt, args...) fprintf(stderr, fmt "\n", ##args)
 #define SET_CONTROL 0
 #ifndef vcos_assert
@@ -30,6 +32,8 @@
 #define focusStep     5
 #define rgainStep     10
 #define bgainStep     10
+
+int is_stop = 0;
 typedef struct
 {
    int id;
@@ -162,27 +166,88 @@ int resetGlobalParameter(CAMERA_INSTANCE camera_instance, GLOBAL_VAL* globalPara
     globalParam -> key = 0;
     
 }
+
+static struct termios initial_settings, new_settings;
+static int peek_character = -1;
+void init_keyboard(void);
+void close_keyboard(void);
+int kbhit(void);
+int readch(void);
+
+void init_keyboard()
+{
+    tcgetattr(0,&initial_settings);
+    new_settings = initial_settings;
+   // new_settings.c_lflag |= ICANON;
+   // new_settings.c_lflag |= ECHO;
+   // new_settings.c_lflag |= ISIG;
+   // new_settings.c_cc[VMIN] = 1;
+    //new_settings.c_cc[VTIME] = 0;
+    new_settings.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(0, TCSANOW, &new_settings);
+ 
+    int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
+}
+ 
+void close_keyboard()
+{
+    tcsetattr(0, TCSANOW, &initial_settings);
+}
+ 
+int kbhit()
+{
+    unsigned char ch;
+    int nread;
+ 
+    if (peek_character != -1) return 1;
+    new_settings.c_cc[VMIN]=0;
+    tcsetattr(0, TCSANOW, &new_settings);
+    nread = read(0,&ch,1);	//非阻塞读取stdin一个字�?    new_settings.c_cc[VMIN]=1;
+    tcsetattr(0, TCSANOW, &new_settings);
+    if(nread == 1)
+    {
+        peek_character = ch;
+        return 1;
+    }
+    return 0;
+}
+ 
+int readch()
+{
+    char ch;
+ 
+    if(peek_character != -1)
+    {
+        ch = peek_character;
+        peek_character = -1;
+        return ch;
+    }
+    read(0,&ch,1);
+    return ch;
+}
+
+
+
+
+
 int get_key_board_from_termios()
 {
-    int key_value;
-    struct termios new_config;
-    struct termios old_config;
-
-    tcgetattr(0, &old_config);
-    new_config = old_config;
-    new_config.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(0, TCSANOW, &new_config);
-    key_value = getchar();
-    tcsetattr(0, TCSANOW, &old_config);
-    return key_value;
+     
+     kbhit();
+    return readch();;
 }
  
 void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalParam){
     int keyVal = 0;
+    init_keyboard();
     while(1){
-         //usleep(100);
+         if(is_stop){
+         close_keyboard();
+           break;
+         }
          keyVal= get_key_board_from_termios();
-         if(keyVal == 27){
+         if(keyVal == 27){  
              keyVal= get_key_board_from_termios();
              if(keyVal == 91){
                 keyVal= get_key_board_from_termios();
@@ -358,10 +423,18 @@ void prcessCmd(PROCESS_STRUCT *processData){
    
     pthread_join(processCmd_pt,NULL);  // wait thread finish
 }
+
+void stop(){
+  is_stop = 1;
+usleep(1000*100);
+arducam_mipi_camera_reset();
+
+}
 int main(int argc, char **argv) {
   CAMERA_INSTANCE camera_instance;
   RASPISTILL_STATE state;
   PROCESS_STRUCT  processData;
+  signal(SIGINT, stop);
   char path = NULL;//"./lens_shading_table/imx230/2672x2004.h";
   arducam_set_lens_table(camera_instance,path );
    default_status(&state);
@@ -415,9 +488,9 @@ int main(int argc, char **argv) {
       LOG("pthread create failed");
       return 1;
   }
-  while(1){
-  //    processKeyboardEvent(camera_instance,&globalParam);
-  }  
+  //while(1){
+     processKeyboardEvent(camera_instance,&globalParam);
+  //}  
 }
 
 

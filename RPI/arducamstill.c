@@ -167,6 +167,13 @@ int resetGlobalParameter(CAMERA_INSTANCE camera_instance, GLOBAL_VAL* globalPara
     
 }
 
+void stop(){
+  is_stop = 1;
+usleep(1000*100);
+arducam_mipi_camera_reset();
+
+}
+
 static struct termios initial_settings, new_settings;
 static int peek_character = -1;
 void init_keyboard(void);
@@ -178,11 +185,6 @@ void init_keyboard()
 {
     tcgetattr(0,&initial_settings);
     new_settings = initial_settings;
-   // new_settings.c_lflag |= ICANON;
-   // new_settings.c_lflag |= ECHO;
-   // new_settings.c_lflag |= ISIG;
-   // new_settings.c_cc[VMIN] = 1;
-    //new_settings.c_cc[VTIME] = 0;
     new_settings.c_lflag &= ~(ICANON | ECHO);
     tcsetattr(0, TCSANOW, &new_settings);
  
@@ -203,7 +205,7 @@ int kbhit()
     if (peek_character != -1) return 1;
     new_settings.c_cc[VMIN]=0;
     tcsetattr(0, TCSANOW, &new_settings);
-    nread = read(0,&ch,1);	//非阻塞读取stdin一个字�?    new_settings.c_cc[VMIN]=1;
+    nread = read(0,&ch,1);	
     tcsetattr(0, TCSANOW, &new_settings);
     if(nread == 1)
     {
@@ -320,10 +322,10 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
              //Exit external trigger mode 
              arducam_set_control(camera_instance, V4L2_CID_ARDUCAM_EXT_TRI,globalParam->trigger);
           }
-         if(!isrunning){
-             LOG("Please click 'Ctrl'+'C' to exit!");
-             break;
-         }
+         //if(!isrunning){
+         //   // LOG("Please click 'Ctrl'+'C' to exit!");
+         //    break;
+         //}
          switch (globalParam->key){
             case UP:   
             case DOWN:
@@ -409,6 +411,7 @@ void prcessCmd(PROCESS_STRUCT *processData){
         free (processData->state.linkname);
     }
      isrunning = 0;
+     stop();
     LOG("Stop preview...");
     res = arducam_stop_preview(processData->camera_instance);
     if (res) {
@@ -424,12 +427,7 @@ void prcessCmd(PROCESS_STRUCT *processData){
     pthread_join(processCmd_pt,NULL);  // wait thread finish
 }
 
-void stop(){
-  is_stop = 1;
-usleep(1000*100);
-arducam_mipi_camera_reset();
 
-}
 int main(int argc, char **argv) {
   CAMERA_INSTANCE camera_instance;
   RASPISTILL_STATE state;

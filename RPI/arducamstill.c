@@ -431,7 +431,7 @@ void prcessCmd(PROCESS_STRUCT *processData){
 }
 
 int main(int argc, char **argv) {
-  CAMERA_INSTANCE camera_instance;
+  CAMERA_INSTANCE camera_instance; 
   CAMERA_INSTANCE camera_instance2;
   RASPISTILL_STATE state;
   PROCESS_STRUCT  processData;
@@ -564,7 +564,7 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
               {
                 if (sscanf(argv[i + 1], "%d", &state->cs) == 1)
                  {
-                    printf("state->cs = %d\r\n",state->cs);
+                   // printf("state->cs = %d\r\n",state->cs);
                     i++;
                  }
                 else

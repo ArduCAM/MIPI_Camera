@@ -55,6 +55,7 @@ enum
    CommandCapture,
    CommandRaw,
    CommandEncoding,
+   CommandEnableCS,
    CommandHelp,
 };
 
@@ -70,6 +71,7 @@ static COMMAND_LIST cmdline_commands[] =
    { CommandCapture, "-capture",    "o",    "used to get one frame", 0},
    { CommandRaw,     "-raw",        "r",  "Add raw bayer data to jpeg metadata", 0 },
    { CommandEncoding,"-encoding",   "e",  "Encoding to use for output file (jpg, bmp, gif, png)", 1},
+   {CommandEnableCS, "-cs",    "cs",    "Set camera cs", 1},
    { CommandHelp, "-help",    "?",    "This help information", 0},
 };
 typedef struct
@@ -80,6 +82,7 @@ typedef struct
    int rgain;                          // red gain compensation
    int bgain;                          // blue gain compensation
    int mode;                           // sensor mode
+   int cs;                              // sensor cs
    int awb_state;                      // auto white balance state
    int ae_state;                       // auto exposure state
    int glCapture;                      // Save the GL frame-buffer instead of camera output
@@ -427,33 +430,47 @@ void prcessCmd(PROCESS_STRUCT *processData){
     pthread_join(processCmd_pt,NULL);  // wait thread finish
 }
 
-
 int main(int argc, char **argv) {
   CAMERA_INSTANCE camera_instance;
+  CAMERA_INSTANCE camera_instance2;
   RASPISTILL_STATE state;
   PROCESS_STRUCT  processData;
+  int res;
   signal(SIGINT, stop);
-  char path = NULL;//"./lens_shading_table/imx230/2672x2004.h";
-  arducam_set_lens_table(camera_instance,path );
-   default_status(&state);
-    LOG("Open camera...");
-    int res = arducam_init_camera(&camera_instance);
-    if (res) {
-        LOG("init camera status = %d", res);
-        return -1;
-    }
-    printSupportFormat(camera_instance);
-
+  default_status(&state);
     if (arducam_parse_cmdline(argc, argv, &state))
     {
-     return 0;
+        return 0;
     } 
+    LOG("Open camera...");
+    if(state.cs == 0){
+        res = arducam_init_camera(&camera_instance);
+        if (res) {
+            LOG("init camera status = %d", res);
+            return -1;
+        }
+    }else if(state.cs == 1){
+        struct camera_interface cam_interface = {
+        .i2c_bus = 0,           // /dev/i2c-0  or /dev/i2c-1   
+        .camera_num = 1,        // mipi interface num
+        .sda_pins = {44, 0},    // enable sda_pins[camera_num], disable sda_pins[camera_num ? 0 : 1]
+        .scl_pins = {45, 1},    // enable scl_pins[camera_num], disable scl_pins[camera_num ? 0 : 1]
+        .shutdown_pins ={133, 133},
+        };
+        res = arducam_init_camera2(&camera_instance,cam_interface);
+        if (res) {
+            LOG("init camera status = %d", res);
+            return -1;
+        }
+    }
+    char path = NULL;//"./lens_shading_table/imx230/2672x2004.h";
+    arducam_set_lens_table(camera_instance,path );
+    printSupportFormat(camera_instance);
     res = arducam_set_mode(camera_instance, state.mode);
     if (res) {
         LOG("set resolution status = %d", res);
         return -1;
     } 
-
     resetGlobalParameter(camera_instance, &globalParam);
     if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE,globalParam.focusVal)) {
         LOG("Failed to set focus, the camera may not support this control.");
@@ -483,12 +500,10 @@ int main(int argc, char **argv) {
  processData.state = state;
   int ret = pthread_create(&processCmd_pt, NULL, prcessCmd,&processData);
   if(ret){
-      LOG("pthread create failed");
-      return 1;
+    LOG("pthread create failed");
+    return 1;
   }
-  //while(1){
-     processKeyboardEvent(camera_instance,&globalParam);
-  //}  
+    processKeyboardEvent(camera_instance,&globalParam);
 }
 
 
@@ -504,7 +519,6 @@ int raspicli_get_command_id(const COMMAND_LIST *commands, const int num_commands
       if (!strcmp(arg, commands[j].command) ||
             !strcmp(arg, commands[j].abbrev))
       {
-         // match
          command_id = commands[j].id;
          *num_parameters = commands[j].num_parameters;
          break;
@@ -540,6 +554,17 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
                 if (sscanf(argv[i + 1], "%d", &state->mode) == 1)
                  {
                     //printf("state->mode = %d\r\n",state->mode);
+                    i++;
+                 }
+                else
+                    valid = 0;
+                break;
+              } 
+          case CommandEnableCS:
+              {
+                if (sscanf(argv[i + 1], "%d", &state->cs) == 1)
+                 {
+                    printf("state->cs = %d\r\n",state->cs);
                     i++;
                  }
                 else
@@ -671,8 +696,6 @@ static int arducam_parse_cmdline(int argc, char **argv,RASPISTILL_STATE *state){
    }
    return 0;
 }
-
-
 static void default_status(RASPISTILL_STATE *state)
 {
     state->mode = 0;
@@ -682,6 +705,7 @@ static void default_status(RASPISTILL_STATE *state)
     state->awb_state = 1;
     state->quality = 50;
     state->timeout = 5000;
+    state->cs = 0;
     state->linkname = NULL;
     state->encoding = IMAGE_ENCODING_JPEG;
 }

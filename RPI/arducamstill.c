@@ -341,6 +341,7 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
             if (arducam_set_control(camera_instance, V4L2_CID_FOCUS_ABSOLUTE,globalParam->focusVal)) {
              LOG("Failed to set focus, the camera may not support this control.");
             }
+	    break;
             case W:
             case S:
             case A:
@@ -348,6 +349,7 @@ void processKeyboardEvent(CAMERA_INSTANCE camera_instance,GLOBAL_VAL* globalPara
             arducam_manual_set_awb_compensation(globalParam->redGain,globalParam->blueGain);
             break;
          }
+	 globalParam->key = 0;
          //LOG("Keyval:%d",keyVal);
     }
    

@@ -174,7 +174,6 @@ void stop(){
   is_stop = 1;
 usleep(1000*100);
 arducam_mipi_camera_reset();
-
 }
 
 static struct termios initial_settings, new_settings;
@@ -422,7 +421,7 @@ void prcessCmd(PROCESS_STRUCT *processData){
     if (res) {
         LOG("stop preview status = %d", res);
     }
-
+ 
     LOG("Close camera...");
     res = arducam_close_camera(processData->camera_instance);
     if (res) {
@@ -506,6 +505,8 @@ int main(int argc, char **argv) {
     return 1;
   }
     processKeyboardEvent(camera_instance,&globalParam);
+
+    //usleep(2*1000*1000);
 }
 
 

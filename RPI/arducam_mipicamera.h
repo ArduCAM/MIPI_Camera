@@ -517,7 +517,7 @@ int arducam_software_auto_exposure(CAMERA_INSTANCE camera_instance, int enable);
 int arducam_software_auto_white_balance(CAMERA_INSTANCE camera_instance, int enable);
 
 /**
- * @brief Helper functionï¼?use to unpack mipi raw10.
+ * @brief Helper functionï¿½?use to unpack mipi raw10.
  * 
  * @param buff_in Raw10 data buffer.
  * @param width Image width
@@ -534,7 +534,7 @@ int arducam_software_auto_white_balance(CAMERA_INSTANCE camera_instance, int ena
 BUFFER *arducam_unpack_raw10_to_raw8(uint8_t *buff_in, int width, int height);
 
 /**
- * @brief Helper functionï¼?use to unpack mipi raw10.
+ * @brief Helper functionï¿½?use to unpack mipi raw10.
  * 
  * @param buff_in Raw10 data buffer.
  * @param width Image width
@@ -549,6 +549,8 @@ BUFFER *arducam_unpack_raw10_to_raw8(uint8_t *buff_in, int width, int height);
  * @note The performance of this function is not very good.
  */
 BUFFER *arducam_unpack_raw10_to_raw16(uint8_t *buff_in, int width, int height);
+
+BUFFER *arducam_rgbir_to_rgb24(uint8_t *buff_in, int width, int height);
 
 void arducam_manual_set_awb_compensation(int r_gain, int b_gain);
 

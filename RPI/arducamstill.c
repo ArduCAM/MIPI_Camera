@@ -437,6 +437,7 @@ int main(int argc, char **argv) {
   RASPISTILL_STATE state;
   PROCESS_STRUCT  processData;
   int res;
+  PREVIEW_PARAMS preview_params;
   signal(SIGINT, stop);
   default_status(&state);
     if (arducam_parse_cmdline(argc, argv, &state))
@@ -450,6 +451,12 @@ int main(int argc, char **argv) {
             LOG("init camera status = %d", res);
             return -1;
         }
+        PREVIEW_PARAMS preview_params1 = {
+            .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen
+            .opacity = 255,              // Opacity of window - 0 = transparent, 255 = opaque
+            .window = {0, 0, 640, 480}, // Destination rectangle for the preview window.
+        };
+    preview_params = preview_params1;
     }else if(state.cs == 1){
         struct camera_interface cam_interface = {
         .i2c_bus = 0,           // /dev/i2c-0  or /dev/i2c-1   
@@ -463,6 +470,12 @@ int main(int argc, char **argv) {
             LOG("init camera status = %d", res);
             return -1;
         }
+        PREVIEW_PARAMS preview_params2 = {
+            .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen
+            .opacity = 255,              // Opacity of window - 0 = transparent, 255 = opaque
+            .window = {640, 480, 640, 480}, // Destination rectangle for the preview window.
+        };
+        preview_params = preview_params2;
     }
     char path = NULL;//"./lens_shading_table/imx230/2672x2004.h";
     arducam_set_lens_table(camera_instance,path );
@@ -481,11 +494,7 @@ int main(int argc, char **argv) {
     }
     arducam_manual_set_awb_compensation(globalParam.redGain,globalParam.blueGain);      
     LOG("Start preview...");
-    PREVIEW_PARAMS preview_params = {
-        .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen
-        .opacity = 255,              // Opacity of window - 0 = transparent, 255 = opaque
-        .window = {0, 0, 1280, 720}, // Destination rectangle for the preview window.
-    };
+    
     res = arducam_start_preview(camera_instance, &preview_params);
     if (res) {
         LOG("start preview status = %d", res);

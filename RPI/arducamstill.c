@@ -454,7 +454,7 @@ int main(int argc, char **argv) {
         PREVIEW_PARAMS preview_params1 = {
             .fullscreen = 0,             // 0 is use previewRect, non-zero to use full screen
             .opacity = 255,              // Opacity of window - 0 = transparent, 255 = opaque
-            .window = {0, 0, 640, 480}, // Destination rectangle for the preview window.
+            .window = {0, 0, 1920, 1080}, // Destination rectangle for the preview window.
         };
     preview_params = preview_params1;
     }else if(state.cs == 1){

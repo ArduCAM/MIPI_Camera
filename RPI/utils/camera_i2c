@@ -117,7 +117,21 @@ gpio -g mode 2 out
 gpio -g write 2 1
 ;;
 
-'a02082'|'a22082'|'a020d3'|'9020e0'|'a03111'|'a02100'|'b03111'|'c03111'|'c03112'|'d03114')
+
+#'a02082'|'a22082'|'a020d3'|'9020e0'|'a03111'|'a02100'|'b03111'|'b03112'|'c03111'|'c03112'|'d03114')
+'a02082'|\
+'a22082'|\
+'a020d3'|\
+'9020e0'|\
+'a03111'|\
+'a02100'|\
+'b03111'|\
+'b03112'|\
+'c03111'|\
+'c03112'|\
+'d03114')
+
+
 echo "Raspberry Pi3B / Pi3B+ / 3A / 4B(1G/2G/4G)"
 # https://www.raspberrypi.org/forums/viewtopic.php?f=38&t=120702&start=100
 # Pins 44&45 Alt1=i2c0, alt2=i2c1
@@ -137,7 +151,7 @@ gpio -g mode 45 alt1
 ./rpi3-gpiovirtbuf s 133 1
 #LED
 #gpio -g write 32 1
-i2cdetect -y 0
+i2cdetect -y 10
 ;;
 
 *)

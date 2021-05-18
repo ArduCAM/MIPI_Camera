@@ -151,7 +151,12 @@ gpio -g mode 45 alt1
 ./rpi3-gpiovirtbuf s 133 1
 #LED
 #gpio -g write 32 1
-i2cdetect -y 10
+version=`uname -r | awk -F '-'  '{printf $1}'`
+if [[ "$version" < "5.0" ]]; then
+	i2cdetect -y 10
+else
+	i2cdetect -y 1
+fi
 ;;
 
 *)

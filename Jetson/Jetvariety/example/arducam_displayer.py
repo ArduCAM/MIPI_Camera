@@ -7,6 +7,7 @@ import os
 import argparse
 from utils import ArducamUtils
 import time
+import sys
 
 def resize(frame, dst_width):
     width = frame.shape[1]
@@ -40,7 +41,10 @@ def display(cap, arducam_utils, fps = False):
             break
 
         if fps and time.time() - start >= 1:
-            print("fps: {}".format(frame_count),end='\r')
+            if sys.version[0] == '2':
+                print("fps: {}".format(frame_count))    
+            else:
+                print("fps: {}".format(frame_count),end='\r')
             start = time.time()
             frame_count = 0 
 

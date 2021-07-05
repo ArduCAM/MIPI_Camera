@@ -22,5 +22,6 @@ Please note that for the new rule to take place, you may either need to reboot o
 Visiting here to get more detail information[Jetson.GPIO - Linux for Tegra](https://pypi.org/project/Jetson.GPIO/#description)
 
 ### Run demo 
-`sudo python JetsonNanoAdapterTestDemo.py`  
+`sudo python Multi-Camera-Adapter-Demo.py -i 1`  
+`-i` use to set i2c bus, for Jetson Nano it is 1, for Jetson Xavier NX it is 8.  
 This demo will preview each camera and get one snapshot. Then stored it to local path.

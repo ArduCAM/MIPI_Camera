@@ -152,7 +152,7 @@ gpio -g mode 45 alt1
 #LED
 #gpio -g write 32 1
 version=`uname -r | awk -F '-'  '{printf $1}'`
-if [[ "$version" < "5.0" ]]; then
+if [ "$version" \< "5.0" ]; then
 	i2cdetect -y 10
 else
 	i2cdetect -y 1

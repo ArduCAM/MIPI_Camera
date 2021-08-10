@@ -96,7 +96,7 @@ gpio -g write 44 1
 gpio -g write 40 1
 ;;
 
-'0011'|'0014'|'a020a0')
+'0011'|'0014'|'a020a0'|'d03140')
 echo "Compute Module/ CM3 - I2C 0 on GPIO 0 & 1. GPIOs 2 & 3 for LED and power"
 echo "Warning: This is just a default setting for cam1."
 echo "Download dt-blob.bin from https://www.raspberrypi.org/documentation/hardware/computemodule/dt-blob-cam1.bin and place it in /boot/."

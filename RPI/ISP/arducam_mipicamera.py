@@ -180,8 +180,8 @@ arducam_start_preview.argtypes = [c_void_p, POINTER(PREVIEW_PARAMS)]
 arducam_start_preview.restype = c_int
 
 arducam_stop_preview = camera_lib.arducam_stop_preview
-arducam_start_preview.argtypes = [c_void_p]
-arducam_start_preview.restype = c_int
+arducam_stop_preview.argtypes = [c_void_p]
+arducam_stop_preview.restype = c_int
 
 arducam_capture = camera_lib.arducam_capture
 arducam_capture.argtypes = [c_void_p, POINTER(IMAGE_FORMAT), c_int]

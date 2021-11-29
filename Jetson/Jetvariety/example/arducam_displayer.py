@@ -87,6 +87,9 @@ if __name__ == "__main__":
     parser.add_argument('--height', type=lambda x: int(x,0),
                         help="set height of image")
     parser.add_argument('--fps', action='store_true', help="display fps")
+    parser.add_argument('--channel', type=int, default=-1, nargs='?',
+                        help="When using Camarray's single channel, use this parameter to switch channels. \
+                            (E.g. ov9781/ov9281 Quadrascopic Camera Bundle Kit)")
 
     args = parser.parse_args()
 
@@ -110,6 +113,9 @@ if __name__ == "__main__":
     # set height
     if args.height != None:
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, args.height)
+
+    if args.channel in range(0, 4):
+        arducam_utils.write_dev(ArducamUtils.CHANNEL_SWITCH_REG, args.channel)
 
     # begin display
     display(cap, arducam_utils, args.fps)

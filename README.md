@@ -1,3 +1,5 @@
+# Drive deprecation declaration
+Raspberry Pi is transitioning from a legacy camera software stack based on proprietary Broadcom GPU code to an open-source stack based on libcamera. This version of the driver is deprecated on the new Bullseye system or later. This driver just can be used on legacy buster version system or before version.
 # Introduction
 The MIPI cameras are widely used nowadays for smartphones and many opensource platforms like Raspberry pi and Nvidia Jetson series boards.
 And in order to add more mipi cameras (or other video streaming device with MIPI interface) support for these maker hardware platforms while keeping the mipi camera complex interface and protocol hidden from the user, 

@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 import time
 
 # Pin Definitons:
-ledPin = 2 # Broadcom pin 2
+ledPin = 3 # Broadcom pin 3
 # Pin Setup:
 GPIO.setmode(GPIO.BCM) # Broadcom pin-numbering scheme
 GPIO.setup(ledPin, GPIO.OUT) # LED pin set as output

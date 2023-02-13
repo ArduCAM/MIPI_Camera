@@ -1,11 +1,42 @@
-import cv2
+try:
+    import cv2
+except ImportError:
+    print("Start to install opencv...")
+    os.system(f'sudo apt-get update')
+    os.system(f'sudo apt install nvidia-opencv-dev')
 import numpy as np
 from datetime import datetime
 import array
 import fcntl
 import os
 import argparse
-from utils import ArducamUtils
+try:
+    from utils import ArducamUtils
+except ImportError as e:
+    import sys
+
+    print(e)
+    print("Start to install python environment...")
+
+    if sys.version[0] == 2:
+        print("Try to install python-pip...")
+        os.system(f'sudo apt install python-pip')       
+    if sys.version[0] == 3:
+        print("Try to install python3-pip...")
+        os.system(f'sudo apt install python3-pip')
+
+    try:
+        from pip import main as pipmain
+    except ImportError:
+        from pip._internal import main as pipmain
+
+    print("Try to install jetson-stats...")
+    pipmain(['install', 'jetson-stats'])
+
+    print("Try to install v4l2-fix...")
+    pipmain(['install', 'v4l2-fix'])
+
+    from utils import ArducamUtils
 import time
 import sys
 

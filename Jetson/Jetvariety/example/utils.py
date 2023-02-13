@@ -127,21 +127,18 @@ class ArducamUtils(object):
     DEVICE_ID = 0x0030
 
     def __init__(self, device_num):
-        import subprocess
-        command = ['bash', '-c', 'source scripts/jetson_variables.sh && env']
-
-        proc = subprocess.Popen(command, stdout = subprocess.PIPE)
-        environment_vars = {}
-        for line in proc.stdout:
-            (key, _, value) = line.partition(b"=")
-            environment_vars[key] = value
-
-        proc.communicate() 
-
+        from jtop import jtop
+        with jtop() as jetson:
+            if jetson.ok():
+                for name_category, category in jetson.board.items():
+                    if name_category == "hardware":
+                        environment_vars = category['Module']
+        print("Hardware is: {}".format(environment_vars))
         # Jetson Model
-        if b"Xavier NX" in environment_vars[b"JETSON_TYPE"].strip():
+        if "Xavier NX" in environment_vars:
             ArducamUtils.pixfmt_map = ArducamUtils.pixfmt_map_xavier_nx
-
+        elif "Orin NX" in environment_vars:
+            ArducamUtils.pixfmt_map = ArducamUtils.pixfmt_map_xavier_nx
         self.vd = open('/dev/video{}'.format(device_num), 'w')
         self.refresh()
 

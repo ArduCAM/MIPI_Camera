@@ -16,14 +16,15 @@
     ```
 4. Run the example script
     ```
-    python FocuserExample.py
+    python FocuserExample.py -i 7
     ```
 ## Focuser.py
 * zoom-lens basic control component.
 
 ## AutoFocus.py
 * Provide two autofocus methods are available, depending on Focuser.py, opencv
-* Use the `sudo apt-get install python-smbus` command to install smbus.
+* Use the `sudo apt-get install python-smbus` command to install python2 smbus.
+* Use the `sudo apt-get install python3-smbus` command to install python3 smbus.
 
 ## AutoFocusExample.py
 * Example of using autofocus, depending on AutoFocus.py
@@ -31,7 +32,7 @@
 ## FocuserExample.py
 * zoom-lens controller.
 ```bash 
-lee@lee-desktop:~/MIPI_Camera/Jetson/JetsonNano_PTZ$ python FocuserExample.py
+lee@lee-desktop:~/MIPI_Camera/Jetson/JetsonNano_PTZ$ python FocuserExample.py -i 7
 ```
 ![IMAGE ALT TEXT](data/command.png)
 

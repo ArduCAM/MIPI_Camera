@@ -62,7 +62,7 @@ class AutoFocus:
         if len(self.value_buffer) == max_len:
             sort_list = sorted(self.value_buffer)
             self.value_buffer.pop(0)
-            return sort_list[max_len / 2]
+            return sort_list[max_len // 2]
         return value
 
     def sobel(self,img):
@@ -84,7 +84,7 @@ class AutoFocus:
         image = camera.getFrame()
         width = image.shape[1]
         height = image.shape[0]
-        image = image[(height / 4):((height / 4) * 3),(width / 4):((width / 4) * 3)]
+        image = image[(height // 4):((height // 4) * 3),(width // 4):((width // 4) * 3)]
         #return laplacian(image)
         #return sobel(image)
         return self.laplacian2(image)

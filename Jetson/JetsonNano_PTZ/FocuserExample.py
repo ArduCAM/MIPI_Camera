@@ -28,6 +28,7 @@ import numpy as py
 import os
 import sys
 import time
+import argparse
 from JetsonCamera import Camera
 
 from Focuser import Focuser
@@ -112,6 +113,14 @@ def RenderMiddleText(stdscr,k,focuser):
     stdscr.addstr(start_y + 8, start_x_device_info, motor_x_val)
     stdscr.addstr(start_y + 9, start_x_device_info, motor_y_val)
     stdscr.addstr(start_y + 10, start_x_device_info, ircut_val)
+
+def parse_cmdline():
+    parser = argparse.ArgumentParser(description='Arducam Controller.')
+
+    parser.add_argument('-i', '--i2c-bus', type=int, nargs=None, required=True,
+                        help='Set i2c bus, for A02 is 6, for B01 is 7 or 8, for Jetson Xavier NX it is 9 and 10.')
+
+    return parser.parse_args()
 # parse input key
 def parseKey(k,focuser,auto_focus,camera):
     global image_count
@@ -153,8 +162,8 @@ def parseKey(k,focuser,auto_focus,camera):
 
 # Python curses example Written by Clay McLeod
 # https://gist.github.com/claymcleod/b670285f334acd56ad1c
-def draw_menu(stdscr,camera):
-    focuser = Focuser(1)
+def draw_menu(stdscr, camera, i2c_bus):
+    focuser = Focuser(i2c_bus)
     auto_focus = AutoFocus(focuser,camera)
     
 
@@ -201,12 +210,13 @@ def draw_menu(stdscr,camera):
         k = stdscr.getch()
 
 def main():
+    args = parse_cmdline()
     #open camera
     camera = Camera()
     #open camera preview
     camera.start_preview()
 
-    curses.wrapper(draw_menu,camera)
+    curses.wrapper(draw_menu, camera, args.i2c_bus)
 
     camera.stop_preview()
     camera.close()

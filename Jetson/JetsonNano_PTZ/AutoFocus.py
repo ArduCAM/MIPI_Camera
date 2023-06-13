@@ -237,11 +237,19 @@ class AutoFocus:
 
 pass
 
+def parse_cmdline():
+    import argparse
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-i', '--i2c-bus', type=int, nargs=None, required=True,
+                        help='Set i2c bus, for A02 is 6, for B01 is 7 or 8, for Jetson Xavier NX it is 9 and 10.')
+
+    return parser.parse_args()
 
 if __name__ == "__main__":
-    camera = Camera()
     camera.start_preview()
-    focuser = Focuser(1)
+    args = parse_cmdline()
+    focuser = Focuser(args.i2c_bus)
     autoFocus = AutoFocus(focuser, camera)
     autoFocus.debug = True
     # autoFocus.startFocus()

@@ -1,1 +1,1 @@
-**See [Camera Demonstration](https://www.arducam.com/docs/camera-for-jetson-nano/mipi-camera-modules-for-jetson-nano/camera-demonstration/#0--1hardware-connection-) for details.**
+**See [Camera Demonstration](https://docs.arducam.com/Nvidia-Jetson-Camera/Jetvariety-Camera/Quick-Start-Guide/) for details.**

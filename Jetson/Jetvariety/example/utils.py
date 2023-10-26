@@ -139,6 +139,10 @@ class ArducamUtils(object):
             ArducamUtils.pixfmt_map = ArducamUtils.pixfmt_map_xavier_nx
         elif "Orin NX" in environment_vars:
             ArducamUtils.pixfmt_map = ArducamUtils.pixfmt_map_xavier_nx
+        elif "Orin Nano" in environment_vars:
+            ArducamUtils.pixfmt_map = ArducamUtils.pixfmt_map_xavier_nx
+        elif "AGX Orin" in environment_vars:
+            ArducamUtils.pixfmt_map = ArducamUtils.pixfmt_map_xavier_nx
         self.vd = open('/dev/video{}'.format(device_num), 'w')
         self.refresh()
 

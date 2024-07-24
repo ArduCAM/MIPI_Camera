@@ -55,6 +55,7 @@ def RenderDescription(stdscr):
     ircut_desc      = "IRCUT    : Space"
     autofocus_desc  = "Autofocus: Enter"
     snapshot_desc   = "Snapshot : 'c' Key"
+    mode_desc       = "Mode     : 't' Key switch mode"
 
     desc_y = 1
     
@@ -65,6 +66,8 @@ def RenderDescription(stdscr):
     stdscr.addstr(desc_y + 5, 0, ircut_desc, curses.color_pair(1))
     stdscr.addstr(desc_y + 6, 0, autofocus_desc, curses.color_pair(1))
     stdscr.addstr(desc_y + 7, 0, snapshot_desc, curses.color_pair(1))
+    stdscr.addstr(desc_y + 8, 0, mode_desc, curses.color_pair(1))
+
 # Rendering  middle text
 def RenderMiddleText(stdscr,k,focuser):
     # get height and width of the window.
@@ -81,6 +84,12 @@ def RenderMiddleText(stdscr,k,focuser):
     motor_x_val = "MotorX   : {}".format(focuser.get(Focuser.OPT_MOTOR_X))[:width-1]
     motor_y_val = "MotorY   : {}".format(focuser.get(Focuser.OPT_MOTOR_Y))[:width-1]
     ircut_val   = "IRCUT    : {}".format(focuser.get(Focuser.OPT_IRCUT))[:width-1]
+
+    if focuser.get(Focuser.OPT_MODE) == 0:
+        mode_str = "Fixed"
+    else:
+        mode_str = "Adjust"
+    mode_val    = "Mode     : {}".format(mode_str)
     
     if k == 0:
         keystr = "No key press detected..."[:width-1]
@@ -113,6 +122,7 @@ def RenderMiddleText(stdscr,k,focuser):
     stdscr.addstr(start_y + 8, start_x_device_info, motor_x_val)
     stdscr.addstr(start_y + 9, start_x_device_info, motor_y_val)
     stdscr.addstr(start_y + 10, start_x_device_info, ircut_val)
+    stdscr.addstr(start_y + 11, start_x_device_info, mode_val)
 
 def parse_cmdline():
     parser = argparse.ArgumentParser(description='Arducam Controller.')
@@ -138,6 +148,8 @@ def parseKey(k,focuser,auto_focus,camera):
     elif k == ord('r'):
         focuser.reset(Focuser.OPT_FOCUS)
         focuser.reset(Focuser.OPT_ZOOM)
+    elif k == ord('t'):
+        focuser.set(Focuser.OPT_MODE,focuser.get(Focuser.OPT_MODE)^0x0001)
     elif k == curses.KEY_DOWN:
         focuser.set(Focuser.OPT_ZOOM,focuser.get(Focuser.OPT_ZOOM) - zoom_step)
     elif k == curses.KEY_UP:

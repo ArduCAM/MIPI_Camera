@@ -102,6 +102,7 @@ class Focuser:
     OPT_MOTOR_X = OPT_BASE | 0x03
     OPT_MOTOR_Y = OPT_BASE | 0x04
     OPT_IRCUT   = OPT_BASE | 0x05
+    OPT_MODE    = OPT_BASE | 0x06
     opts = {
         OPT_FOCUS : {
             "REG_ADDR" : 0x01,
@@ -129,6 +130,12 @@ class Focuser:
         },
         OPT_IRCUT : {
             "REG_ADDR" : 0x0C, 
+            "MIN_VALUE": 0x00,
+            "MAX_VALUE": 0x01,   #0x0001 open, 0x0000 close
+            "RESET_ADDR": None,
+        },
+        OPT_MODE : {
+            "REG_ADDR" : 0x30, 
             "MIN_VALUE": 0x00,
             "MAX_VALUE": 0x01,   #0x0001 open, 0x0000 close
             "RESET_ADDR": None,

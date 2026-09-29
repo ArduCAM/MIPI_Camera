@@ -18,10 +18,10 @@ except ImportError as e:
     print(e)
     print("Start to install python environment...")
 
-    if sys.version[0] == 2:
+    if sys.version[0] == 2 or sys.version[0] == '2':
         print("Try to install python-pip...")
         os.system(f'sudo apt install python-pip')       
-    if sys.version[0] == 3:
+    if sys.version[0] == 3 or sys.version[0] == '3':
         print("Try to install python3-pip...")
         os.system(f'sudo apt install python3-pip')
 
